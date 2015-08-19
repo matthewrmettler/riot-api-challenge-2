@@ -6,7 +6,7 @@ This python file contains all the necessary functions needed to make calls to th
 """
 import requests
 from time import sleep
-from api_key import key
+from key import key
 __author__ = 'Matt'
 
 timeout_length = 5.0
