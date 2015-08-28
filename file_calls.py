@@ -106,6 +106,14 @@ def load_match(match_id, patch='5.14', queue="RANKED_SOLO", region='NA'):
         with open(path, 'w') as f:
             return json.load(f)
 
+def open_match(m):
+    """
+    Open a match file.
+    :param m: A string that references the absolute location of that match in JSON.
+    :return: A JSON file representing that match.
+    """
+    with open(m, 'r') as f:
+        return json.load(f)
 
 def get_sample_matches(patch='5.14', queue="RANKED_SOLO", region='NA', count=100):
 
