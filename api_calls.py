@@ -7,29 +7,35 @@ This python file contains all the necessary functions needed to make calls to th
 import requests
 from time import sleep
 from key import key
+
 __author__ = 'Matt'
 
 timeout_length = 5.0
 
-def call_api(url, id, param, region, attemptNo=0, printCall=False):
+
+def call_api(url, call_id, param, region, attempt_no=0, print_call=False):
     """
     For ease of use, simpler API calls use this method.
     :param url: The specific type of API call being made
-    :param param: Additional parameters, such as summoner ID.
-    :param start_time: The time at which the user asked to see his info. Used to track length of calls.
+    :param call_id: A specific ID made for this call. Could be a summoner ID, could be a match ID, etc.
+    :param param: Additional parameters that might be needed, such as 'only ranked games.'
+    :param region: What region (US, EUNW, KR) to use in this call.
+    :param attempt_no: Number of times this specific call has been attempted. Used to determine whether to
+    determine failure and move on.
+    :param print_call: Print out the actual call being made to the console (for debugging purposes). Default to False.
     :return: The requests response from the API call.
     """
 
-    r = u"https://{0}.api.pvp.net/{1}{2}{3}{4}{5}".format(region, url, id, param, "api_key=", key)
-    if (printCall): print(u"CallAPI: {req}".format(req = r))
-    call = ""
-    attemptNo += 1
+    r = u"https://{0}.api.pvp.net/{1}{2}{3}{4}{5}".format(region, url, call_id, param, "api_key=", key)
+    if print_call:
+        print(u"CallAPI: {req}".format(req=r))
+    attempt_no += 1
     try:
         call = requests.get(r, timeout=timeout_length)
     except requests.exceptions.Timeout as e:
         # Try again
         print(e)
-        return call_api(url, id, param, attemptNo)
+        return call_api(url, call_id, param, attempt_no)
     except requests.exceptions.TooManyRedirects as e:
         # Tell the user their URL was bad and try a different one
         print(e)
@@ -39,35 +45,40 @@ def call_api(url, id, param, region, attemptNo=0, printCall=False):
         print(e)
         return 400
 
+    if not hasattr(call, 'status_code'):
+        return call_api(url, call_id, param, attempt_no)
 
-    if not hasattr(call, 'status_code'): return call_api(url, id, param, attemptNo)
-
-    if call.status_code == 200: #everything's fine
+    if call.status_code == 200:  # Everything's fine
         return call
     else:
         print(call.status_code)
         print(call.headers)
-        if attemptNo >= 8: #if it doesnt work after 8 tries, give up
+        if attempt_no >= 8:  # if it doesnt work after 8 tries, give up
             return call
-        if call.status_code == 400: #Bad request -- something is wrong with my code, show an error, DO NOT keep making calls
+        if call.status_code == 400:
+            # Bad request -- something is wrong with my code, show an error, DO NOT keep making calls
             return 400
-        if call.status_code == 401: #Unauthorized -- my api key isn't valid, show a page for this
+        if call.status_code == 401:
+            # Unauthorized -- my api key isn't valid, show a page for this
             return 401
-        if call.status_code == 404: #item not found -- do something about this
+        if call.status_code == 404:
+            # item not found -- do something about this
             return 404
-        if call.status_code == 429: #Rate limit exceeded -- wait a few seconds
+        if call.status_code == 429:
+            # Rate limit exceeded -- wait a few seconds
             if 'Retry-After' in call.headers:
-                print("retry-after: {rt} ".format(rt=call.headers['Retry-After'] ))
+                print("retry-after: {rt} ".format(rt=call.headers['Retry-After']))
                 sleep(float(call.headers['Retry-After']))
             else:
                 sleep(1.2)
-            return call_api(url, id, param, attemptNo)
-        if call.status_code == 500: #Internal server error -- something wrong on riot's end -- wait?
+            return call_api(url, call_id, param, attempt_no)
+        if call.status_code == 500:  # Internal server error -- something wrong on riot's end -- wait?
             sleep(1.2)
-            return call_api(url, id, param, attemptNo)
-        if call.status_code == 503: #service unavailable -- something wrong on riot's end
+            return call_api(url, call_id, param, attempt_no)
+        if call.status_code == 503:  # service unavailable -- something wrong on riot's end
             sleep(1.2)
-            return call_api(url, id, param, attemptNo)
+            return call_api(url, call_id, param, attempt_no)
+
 
 def generate_champion_name_dictionary():
     """
@@ -75,17 +86,18 @@ def generate_champion_name_dictionary():
     'championId', an integer, so this provides an easy way to translate that ID into the name of the champion.
     :return: A dictionary, where the key-value pair is {id : name}.
     """
-    dict = {}
+    champ_dict = {}
     r = requests.get("http://ddragon.leagueoflegends.com/cdn/5.16.1/data/en_US/champion.json")
     call = r.json()
     champ_names = call["data"].keys()
     data = call["data"]
     for c in champ_names:
         name = c
-        id = int(data[c]["key"])
-        dict[id] = name
+        champ_id = int(data[c]["key"])
+        champ_dict[champ_id] = name
 
-    return dict
+    return champ_dict
+
 
 def generate_list_of_ap_items():
     """
@@ -99,16 +111,15 @@ def generate_list_of_ap_items():
         call = requests.get("http://ddragon.leagueoflegends.com/cdn/{p}.1/data/en_US/item.json".format(p=patch))
         r = call.json()
         data = r["data"]
-        items  = data.keys()
+        items = data.keys()
         for i in items:
-            if ("SpellDamage" in data[i]["tags"]):
-                #print(data[i]["name"])
+            if "SpellDamage" in data[i]["tags"]:
                 ap_items.append(int(i))
-                if ( ("into" in data[i]) and ("from" in data[i]) ):
-                    if (len(data[i]["into"]) == 0) and (len(data[i]["from"]) >= 1): #core item
+                if "into" in data[i] and "from" in data[i]:
+                    if (len(data[i]["into"]) == 0) and (len(data[i]["from"]) >= 1):
                         core_ap_items.append(int(i))
-    #print(ap_items)
     return [ap_items, core_ap_items]
+
 
 def get_match(match_id, region):
     """

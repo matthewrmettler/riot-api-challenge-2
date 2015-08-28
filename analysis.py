@@ -1,22 +1,22 @@
 __author__ = 'Matt'
-from file_calls import getMatchListByType, getSampleMatches
+from file_calls import get_match_list_by_type, get_sample_matches
 from api_calls import get_match, generate_champion_name_dictionary, generate_list_of_ap_items
 import json
 
 rylai_id = 3116
 [ap_items, core_ap_items] = generate_list_of_ap_items()
 
-def display_champion_winrates(noMatches):
+def display_champion_winrates(match_count):
     """
-    Prints out a pretty grid of the winrates of various champions, gained from the number of random matches it was
+    Prints out a pretty grid of the win rates of various champions, gained from the number of random matches it was
     asked to get.
-    :param noMatches: How many matches to look at.
+    :param match_count: How many matches to look at.
     :return: Nothing. Prints out the results.
     """
     champions = {}
 
-    matches = getSampleMatches('5.11', 'RANKED_SOLO', 'BR', noMatches)
-    #matches = getAllMatches('5.11', 'RANKED_SOLO', 'BR')
+    matches = get_sample_matches('5.11', 'RANKED_SOLO', 'BR', match_count)
+    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
     count = 0
     for m in matches:
         count +=1
@@ -41,8 +41,8 @@ def calculate_frequency_of_roles(noMatches):
     top = [0, 0]
     middle = [0, 0]
     jungle = [0, 0]
-    matches = getSampleMatches('5.11', 'RANKED_SOLO', 'BR', noMatches)
-    #matches = getAllMatches('5.11', 'RANKED_SOLO', 'BR')
+    matches = get_sample_matches('5.11', 'RANKED_SOLO', 'BR', noMatches)
+    #matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
     count = 0
     for m in matches:
         count +=1
@@ -178,7 +178,7 @@ def get_item_builders_by_match(match, item_id=rylai_id):
 
 def main():
     print("main")
-    default_matches = getMatchListByType()
+    default_matches = get_match_list_by_type()
     small_sample = default_matches[0:25]
     for id in small_sample:
         temp_match = get_match(id)
