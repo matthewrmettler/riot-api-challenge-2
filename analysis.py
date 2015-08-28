@@ -1,12 +1,16 @@
 __author__ = 'Matt'
 from file_calls import get_match_list_by_type, get_sample_matches, open_match
-from api_calls import get_match, generate_champion_name_dictionary, generate_list_of_ap_items
+from api_calls import get_match, generate_champion_name_dictionary, \
+    generate_list_of_ap_items, generate_ap_item_name_dictionary
 
 rylais_id = 3116
 [ap_items, core_ap_items] = generate_list_of_ap_items()
 
+champion_name_dict = generate_champion_name_dictionary()
+ap_items_name_dict = generate_ap_item_name_dictionary()
 
-def display_champion_winrates(match_count):
+
+def display_champion_win_rates(match_count):
     """
     Prints out a pretty grid of the win rates of various champions, gained from the number of random matches it was
     asked to get.
@@ -30,7 +34,7 @@ def display_champion_winrates(match_count):
                 champions[c[0]][0] += 1
             else:
                 champions[c[0]][1] += 1
-    pprint_winrate(champions)
+    pprint_win_rate(champions)
 
 
 def calculate_frequency_of_roles(match_count):
@@ -79,25 +83,64 @@ def calculate_frequency_of_roles(match_count):
     return [top, middle, jungle]
 
 
-def core_item_build_order(match, participant_id):
-    # item_timeline = build_timeline_for_participant(match, pID, True, False)
-    # core_items_built = get_core_ap_items_built(match["participants"][pID])
-    pass
-
-
-def pprint_winrate(champ_dict):
+def display_core_item_build_orders(match_count):
     """
-    Prints a pretty version of the winrate dictionary to the console.
+    This function pulls a sample of match data and displays a core item build order for people who build AP.
+    :param match_count: The number of matches to sample.
+    :return: Nothing. Only prints data.
+    """
+
+    matches = get_sample_matches('5.11', 'RANKED_SOLO', 'BR', match_count)
+    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
+    # count = 0
+    for m in matches:
+        match = open_match(m)
+        '''
+        count += 1
+        if count % 50 == 0:
+            print(count)
+        '''
+        ap_participants = list_of_ap_participants(match)
+        for participant_id in ap_participants:
+            res = core_item_build_order(match, participant_id)
+            printable_build_order = [ap_items_name_dict[x] for x in res[1]]
+            print("{champ} : {item}".format(champ=res[0], item=printable_build_order))
+
+
+def core_item_build_order(match, participant_id):
+    """
+    Generates the order in which a participant finishes core AP items.
+    :param match: The match in question (JSON file)
+    :param participant_id: The participant in question.
+    :return: A 2-item array, ['champion name', 'items built'], where 'items built' is also an array.
+    """
+    build_order = []
+    item_timeline = build_timeline_for_participant(match, participant_id, True, False)
+    core_items_built = get_core_ap_items_built(match["participants"][participant_id-1])
+    champion_name = champion_name_dict[int(match["participants"][participant_id-1]["championId"])]
+    # print(core_items_built)
+    for event in item_timeline:
+        for item in core_items_built:
+            if int(event['itemId']) == item:
+                if item not in build_order:  # avoid duplicates due to selling or re-buying
+                    build_order.append(item)
+
+    return [champion_name, build_order]
+
+
+def pprint_win_rate(champ_dict):
+    """
+    Prints a pretty version of the win rate dictionary to the console.
     :param champ_dict: The results gathered that we're trying to print.
     :return: Nothing. This simply prints to the console.
     """
-    champ_name = generate_champion_name_dictionary()
+
     print("\t %-15s %5s %5s %5s" % ("Champion", "Win", "Lose", "Percent"))
     for key in champ_dict:
         win = champ_dict[key][0]
         lose = champ_dict[key][1]
         percent = round((float(win) / (float(win) + float(lose))) * 100.0, 2)
-        print("\t %-15s %5d %5d\t%.2f" % (champ_name[key], win, lose, percent))
+        print("\t %-15s %5d %5d\t%.2f" % (champion_name_dict[key], win, lose, percent))
 
 
 def get_ap_champions_by_match(match):
@@ -147,6 +190,22 @@ def get_core_ap_items_built(participant):
         if item in core_ap_items:
             core.append(item)
     return core
+
+
+def list_of_ap_participants(match):
+    """
+    This function returns a list of participant IDs who built AP in a given match.
+    :param match: A JSON file representing a match.
+    :return: An array of integers representing IDs of participants who built AP items.
+    """
+    ap_participants = []
+    participants = match["participants"]
+    for p in participants:
+        if participant_built_ap(p):
+            # Found a player who built AP. Include the champion's ID and whether they won.
+            ap_participants.append(p["participantId"])
+    # print(ap_participants)
+    return ap_participants
 
 
 def participant_built_ap(participant):
@@ -208,7 +267,7 @@ def get_item_builders_by_match(match, item_id=rylais_id):
     """
     builders = []
     for participant_id in range(10):
-        if participant_has_item(match["participants"][participant_id], item_id):
+        if participant_has_item(match["participants"][participant_id-1], item_id):
             builders.append(participant_id)
     return builders
 
@@ -229,8 +288,9 @@ def main():
 
 
 def main2():
-    calculate_frequency_of_roles(5)
-    # display_champion_winrates(100)
+    # calculate_frequency_of_roles(5)
+    # display_champion_win_rates(100)
+    display_core_item_build_orders(1)
 
 
 if __name__ == "__main__":

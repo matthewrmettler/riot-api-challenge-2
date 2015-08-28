@@ -98,6 +98,18 @@ def generate_champion_name_dictionary():
 
     return champ_dict
 
+def generate_ap_item_name_dictionary():
+    item_dict = {}
+    ap_item_ids = generate_list_of_ap_items()[0]
+
+    call = requests.get("http://ddragon.leagueoflegends.com/cdn/5.14.1/data/en_US/item.json")
+    r = call.json()
+    data = r["data"]
+    for item in ap_item_ids:
+        if str(item) in data:
+            item_dict[item] = data[str(item)]["name"]
+    return item_dict
+
 
 def generate_list_of_ap_items():
     """
