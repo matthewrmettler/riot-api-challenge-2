@@ -1,5 +1,5 @@
 __author__ = 'Matt'
-from api_calls import getMatch
+from api_calls import get_match
 import os
 import json
 import glob
@@ -48,7 +48,7 @@ def writeMatchByType(id, patch='5.14', queue="RANKED_SOLO", region='NA'):
     path = "{floc}{mid}.json".format(floc=file_loc, mid=id)
     if not os.path.isfile(path):
         with open(path, 'w') as f:
-            m = getMatch(id, region)
+            m = get_match(id, region)
             if not isinstance(m, int):
                 json.dump(m, f)
                 print("Wrote match {mid}".format(mid=id))

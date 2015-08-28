@@ -11,7 +11,7 @@ __author__ = 'Matt'
 
 timeout_length = 5.0
 
-def callAPI(url, id, param, region, attemptNo=0, printCall=False):
+def call_api(url, id, param, region, attemptNo=0, printCall=False):
     """
     For ease of use, simpler API calls use this method.
     :param url: The specific type of API call being made
@@ -29,7 +29,7 @@ def callAPI(url, id, param, region, attemptNo=0, printCall=False):
     except requests.exceptions.Timeout as e:
         # Try again
         print(e)
-        return callAPI(url, id, param, attemptNo)
+        return call_api(url, id, param, attemptNo)
     except requests.exceptions.TooManyRedirects as e:
         # Tell the user their URL was bad and try a different one
         print(e)
@@ -40,7 +40,7 @@ def callAPI(url, id, param, region, attemptNo=0, printCall=False):
         return 400
 
 
-    if not hasattr(call, 'status_code'): return callAPI(url, id, param, attemptNo)
+    if not hasattr(call, 'status_code'): return call_api(url, id, param, attemptNo)
 
     if call.status_code == 200: #everything's fine
         return call
@@ -61,20 +61,20 @@ def callAPI(url, id, param, region, attemptNo=0, printCall=False):
                 sleep(float(call.headers['Retry-After']))
             else:
                 sleep(1.2)
-            return callAPI(url, id, param, attemptNo)
+            return call_api(url, id, param, attemptNo)
         if call.status_code == 500: #Internal server error -- something wrong on riot's end -- wait?
             sleep(1.2)
-            return callAPI(url, id, param, attemptNo)
+            return call_api(url, id, param, attemptNo)
         if call.status_code == 503: #service unavailable -- something wrong on riot's end
             sleep(1.2)
-            return callAPI(url, id, param, attemptNo)
+            return call_api(url, id, param, attemptNo)
 
-def generateChampionNamesDictionary():
-    '''
+def generate_champion_name_dictionary():
+    """
     Generates a dictionary, where the key-value pair is {id : name}. All data stored in match data is given with
     'championId', an integer, so this provides an easy way to translate that ID into the name of the champion.
     :return: A dictionary, where the key-value pair is {id : name}.
-    '''
+    """
     dict = {}
     r = requests.get("http://ddragon.leagueoflegends.com/cdn/5.16.1/data/en_US/champion.json")
     call = r.json()
@@ -87,13 +87,14 @@ def generateChampionNamesDictionary():
 
     return dict
 
-def generateListOfAPItems():
-    '''
+def generate_list_of_ap_items():
+    """
     Generates a list of item IDs that are associated with 'Ability Power' items, by looking through the statuc item
     file and finding all items that have a "SpellDamage" tag.
     :return: An array of integers, each integer being the id of an item.
-    '''
+    """
     ap_items = []
+    core_ap_items = []
     for patch in ['5.11', '5.14']:
         call = requests.get("http://ddragon.leagueoflegends.com/cdn/{p}.1/data/en_US/item.json".format(p=patch))
         r = call.json()
@@ -103,18 +104,20 @@ def generateListOfAPItems():
             if ("SpellDamage" in data[i]["tags"]):
                 #print(data[i]["name"])
                 ap_items.append(int(i))
+                if ( ("into" in data[i]) and ("from" in data[i]) ):
+                    if (len(data[i]["into"]) == 0) and (len(data[i]["from"]) >= 1): #core item
+                        core_ap_items.append(int(i))
     #print(ap_items)
-    return ap_items
+    return [ap_items, core_ap_items]
 
-def getMatch(match_id, region):
+def get_match(match_id, region):
     """
     Load a specific match with its map ID.
     :param match_id: The ID identifying the specific match we're trying to look at.
-    :param start_time: The time at which the user asked to see his info. Used to track length of calls.
     :return: A JSON object representing the match, or an error code representing that it wasn't found.
     """
-    match_call = callAPI("api/lol/{r}/v2.2/match/".format(r=region.lower()), match_id, "?includeTimeline=true&", region.lower())
-    #print(match_call.status_code)
+    match_call = call_api("api/lol/{r}/v2.2/match/".format(r=region.lower()), match_id,
+                          "?includeTimeline=true&", region.lower())
     if isinstance(match_call, int):
         return match_call
     return match_call.json()
