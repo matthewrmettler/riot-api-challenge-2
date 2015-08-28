@@ -9,6 +9,63 @@ rylais_id = 3116
 champion_name_dict = generate_champion_name_dictionary()
 ap_items_name_dict = generate_ap_item_name_dictionary()
 
+class Profile():
+    """
+    An outline of everything I want from the analysis.
+    Using various function calls, fill out all these values, then build a database storing thousands of these
+    for analysis.
+    """
+    def __init__(self, champ_id, patch, region, queue):
+        self.champ_id = champ_id
+        self.patch = patch
+        self.region = region
+        self.queue = queue
+
+    def stats(self, result, kills, deaths, assists, final_build, shopping_trips, damage_done, damage_taken):
+        self.result = result
+        self.kills = kills
+        self.deaths = deaths
+        self.assists = assists
+        self.final_build = final_build
+        self.shopping_trips = shopping_trips
+        self.damage_done = damage_done
+        self.damage_taken = damage_taken
+
+    def built_rylais(self, has_rylais):
+        self.has_rylais = has_rylais
+
+    def rylaisAnalysis(self, nlr_first, kda_by_stage):
+        self.nlr_first = nlr_first
+        self.kda_by_stage = kda_by_stage
+
+
+def generate_profiles(match_count):
+    match_type = ['5.11', 'RANKED_SOLO', 'BR']
+    matches = get_sample_matches(match_type[0], match_type[1], match_type[2], match_count)
+    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
+    count = 0
+    for m in matches:
+        match = open_match(m)
+        count += 1
+        if count % 50 == 0:
+            print(count)
+        ap_champions = list_of_ap_participants(match)
+        for champ in ap_champions:
+            build_profile(match, match_type, champ)
+    pass
+
+
+def build_profile(match, match_type, participant_id):
+    champ_id = match["participants"][participant_id-1]["championId"]
+    # Initialize Profile class with champion type and match type info
+    champion = Profile(champ_id, match_type[0], match_type[1], match_type[2])
+
+def get_profile_stats(profile, match, participant_id):
+    stats = match["participants"][participant_id-1]["stats"]
+    final_build = None # TODO: final build for profile
+    shopping_trips = None # TODO: implement shopping trips
+    profile.stats(stats["winner"], stats["kills"], stats["deaths"], stats["assists"], final_build, shopping_trips,
+                  stats["totalDamageDealtToChampions"], stats["totalDamageTaken"])
 
 def display_champion_win_rates(match_count):
     """
@@ -168,6 +225,35 @@ def was_rylais_built(participant):
     return participant_has_item(participant)
 
 
+def display_rylais_build_orders(match_count):
+    """
+
+    :param match_count:
+    :return:
+    """
+
+    matches = get_sample_matches('5.11', 'RANKED_SOLO', 'BR', match_count)
+    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
+    # count = 0
+    for m in matches:
+        match = open_match(m)
+        '''
+        count += 1
+        if count % 50 == 0:
+            print(count)
+        '''
+        ap_participants = list_of_ap_participants(match)
+        for participant_id in ap_participants:
+            valid_participant = was_rylais_built(match["participants"][participant_id-1])
+
+def rylais_build_order(match, participant):
+    """
+    This function figures out whether the participant built a Needlessly Large Rod first, or a Giant's Belt first.
+    :param match: The specific match to look at.
+    :param participant: The particular participant whose items we want to know.
+    :return: True if NLR was built first, False if Giant's Belt was built first. None if Rylai's wasnt even built.
+    """
+
 def participant_has_item(participant, item_id=rylais_id):
     stats = participant["stats"]
     for i in range(7):
@@ -273,25 +359,15 @@ def get_item_builders_by_match(match, item_id=rylais_id):
 
 
 def main():
-    print("main")
-    default_matches = get_match_list_by_type()
-    small_sample = default_matches[0:25]
-    for match_id in small_sample:
-        temp_match = get_match(match_id, "NA")
-        temp_rylais = get_item_builders_by_match(temp_match)
-        print(len(temp_rylais))
-        '''
-        for m in temp_rylais:
-            temp_timeline = build_timeline_for_participant(temp_match, m)
-            pprint(temp_timeline)
-        '''
+    generate_profiles(1)
 
 
 def main2():
+    pass
     # calculate_frequency_of_roles(5)
     # display_champion_win_rates(100)
-    display_core_item_build_orders(1)
+    # display_core_item_build_orders(1)
 
 
 if __name__ == "__main__":
-    main2()
+    main()
