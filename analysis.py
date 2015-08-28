@@ -79,24 +79,25 @@ def calculate_frequency_of_roles(match_count):
     return [top, middle, jungle]
 
 
-def was_rylais_built(match, participant):
-    return participant_has_item(match, participant)
-
-
-def core_item_build_order(match, pID):
-    item_timeline = build_timeline_for_participant(match, pID, True, False)
-    core_items_built = get_core_ap_items_built(match["participants"][pID])
+def core_item_build_order(match, participant_id):
+    # item_timeline = build_timeline_for_participant(match, pID, True, False)
+    # core_items_built = get_core_ap_items_built(match["participants"][pID])
     pass
 
 
 def pprint_winrate(champ_dict):
+    """
+    Prints a pretty version of the winrate dictionary to the console.
+    :param champ_dict: The results gathered that we're trying to print.
+    :return: Nothing. This simply prints to the console.
+    """
     champ_name = generate_champion_name_dictionary()
     print("\t %-15s %5s %5s %5s" % ("Champion", "Win", "Lose", "Percent"))
     for key in champ_dict:
-        win= champ_dict[key][0]
-        lose= champ_dict[key][1]
-        percent = round((float(win) / (float(win) + float(lose))) * 100.0,3)
-        print("\t %-15s %5d %5d\t%.2f" % (champ_name[key],win, lose, percent))
+        win = champ_dict[key][0]
+        lose = champ_dict[key][1]
+        percent = round((float(win) / (float(win) + float(lose))) * 100.0, 2)
+        print("\t %-15s %5d %5d\t%.2f" % (champ_name[key], win, lose, percent))
 
 
 def get_ap_champions_by_match(match):
@@ -115,24 +116,19 @@ def get_ap_champions_by_match(match):
     return champion_list
 
 
-def get_role(match, participant_id):
+def was_rylais_built(participant):
     """
-    get_role returns the role (as a string) associated with this participant id.
-    :param match: JSON object associated with a specific match.
-    :param participant_id: ID value of specific player in this match.
-    :return: The role of the person with this ID.
+    Checks whether Rylai's was built.
+    :param participant: The participant's JSON data.
+    :return: True if it was built, false otherwise.
     """
-    p = match["participants"][participant_id]
-
-    if (p["timeline"]["role"] == u'DUO_CARRY') or (p["timeline"]["role"] == u'DUO_SUPPORT'):
-        return p["timeline"]["role"]
-    return p["timeline"]["lane"]
+    return participant_has_item(participant)
 
 
-def participant_has_item(match, participant_id, item_id=rylais_id):
-    p = match["participants"][participant_id]["stats"]
+def participant_has_item(participant, item_id=rylais_id):
+    stats = participant["stats"]
     for i in range(7):
-        if p["item{0}".format(i)] == item_id:
+        if stats["item{0}".format(i)] == item_id:
             return True
     return False
 
@@ -211,9 +207,9 @@ def get_item_builders_by_match(match, item_id=rylais_id):
     :return: An array of participant IDs.
     """
     builders = []
-    for i in range(10):
-        if participant_has_item(match, i, item_id):
-            builders.append(i)
+    for participant_id in range(10):
+        if participant_has_item(match["participants"][participant_id], item_id):
+            builders.append(participant_id)
     return builders
 
 

@@ -44,8 +44,8 @@ def get_match_list_by_type(patch='5.14', queue="RANKED_SOLO", region='NA'):
     if not verify(patch, queue, region):
         return False
 
-    base_dir = root_dir()
-    file_loc = base_dir + '/AP_ITEM_DATASET/{p}/{q}/{r}.json'.format(p=patch, q=queue, r=region)
+    base_dir = 'E:\Workspace\AP_ITEM_DATASET'
+    file_loc = base_dir + '/{p}/{q}/{r}.json'.format(p=patch, q=queue, r=region)
     with open(file_loc) as f:
         data = json.load(f)
     return data
@@ -106,6 +106,7 @@ def load_match(match_id, patch='5.14', queue="RANKED_SOLO", region='NA'):
         with open(path, 'w') as f:
             return json.load(f)
 
+
 def open_match(m):
     """
     Open a match file.
@@ -114,6 +115,7 @@ def open_match(m):
     """
     with open(m, 'r') as f:
         return json.load(f)
+
 
 def get_sample_matches(patch='5.14', queue="RANKED_SOLO", region='NA', count=100):
 
