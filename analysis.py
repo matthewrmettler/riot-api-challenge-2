@@ -9,6 +9,10 @@ rylais_id = 3116
 champion_name_dict = generate_champion_name_dictionary()
 ap_items_name_dict = generate_ap_item_name_dictionary()
 
+
+#  Profile class methods
+
+
 class Profile():
     """
     An outline of everything I want from the analysis.
@@ -59,6 +63,9 @@ def build_profile(match, match_type, participant_id):
     champ_id = match["participants"][participant_id-1]["championId"]
     # Initialize Profile class with champion type and match type info
     champion = Profile(champ_id, match_type[0], match_type[1], match_type[2])
+    get_profile_stats(champion, match, participant_id)
+    champion.built_rylais(was_rylais_built(match["participants"][participant_id-1]))
+
 
 def get_profile_stats(profile, match, participant_id):
     stats = match["participants"][participant_id-1]["stats"]
@@ -66,6 +73,10 @@ def get_profile_stats(profile, match, participant_id):
     shopping_trips = None # TODO: implement shopping trips
     profile.stats(stats["winner"], stats["kills"], stats["deaths"], stats["assists"], final_build, shopping_trips,
                   stats["totalDamageDealtToChampions"], stats["totalDamageTaken"])
+
+
+#  Display methods
+
 
 def display_champion_win_rates(match_count):
     """
@@ -92,6 +103,45 @@ def display_champion_win_rates(match_count):
             else:
                 champions[c[0]][1] += 1
     pprint_win_rate(champions)
+
+
+def display_core_item_build_orders(match_count):
+    """
+    This function pulls a sample of match data and displays a core item build order for people who build AP.
+    :param match_count: The number of matches to sample.
+    :return: Nothing. Only prints data.
+    """
+
+    matches = get_sample_matches('5.11', 'RANKED_SOLO', 'BR', match_count)
+    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
+    # count = 0
+    for m in matches:
+        match = open_match(m)
+        '''
+        count += 1
+        if count % 50 == 0:
+            print(count)
+        '''
+        ap_participants = list_of_ap_participants(match)
+        for participant_id in ap_participants:
+            res = core_item_build_order(match, participant_id)
+            printable_build_order = [ap_items_name_dict[x] for x in res[1]]
+            print("{champ} : {item}".format(champ=res[0], item=printable_build_order))
+
+
+def pprint_win_rate(champ_dict):
+    """
+    Prints a pretty version of the win rate dictionary to the console.
+    :param champ_dict: The results gathered that we're trying to print.
+    :return: Nothing. This simply prints to the console.
+    """
+
+    print("\t %-15s %5s %5s %5s" % ("Champion", "Win", "Lose", "Percent"))
+    for key in champ_dict:
+        win = champ_dict[key][0]
+        lose = champ_dict[key][1]
+        percent = round((float(win) / (float(win) + float(lose))) * 100.0, 2)
+        print("\t %-15s %5d %5d\t%.2f" % (champion_name_dict[key], win, lose, percent))
 
 
 def calculate_frequency_of_roles(match_count):
@@ -140,28 +190,7 @@ def calculate_frequency_of_roles(match_count):
     return [top, middle, jungle]
 
 
-def display_core_item_build_orders(match_count):
-    """
-    This function pulls a sample of match data and displays a core item build order for people who build AP.
-    :param match_count: The number of matches to sample.
-    :return: Nothing. Only prints data.
-    """
-
-    matches = get_sample_matches('5.11', 'RANKED_SOLO', 'BR', match_count)
-    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
-    # count = 0
-    for m in matches:
-        match = open_match(m)
-        '''
-        count += 1
-        if count % 50 == 0:
-            print(count)
-        '''
-        ap_participants = list_of_ap_participants(match)
-        for participant_id in ap_participants:
-            res = core_item_build_order(match, participant_id)
-            printable_build_order = [ap_items_name_dict[x] for x in res[1]]
-            print("{champ} : {item}".format(champ=res[0], item=printable_build_order))
+#  Build order and item build methods
 
 
 def core_item_build_order(match, participant_id):
@@ -185,35 +214,64 @@ def core_item_build_order(match, participant_id):
     return [champion_name, build_order]
 
 
-def pprint_win_rate(champ_dict):
-    """
-    Prints a pretty version of the win rate dictionary to the console.
-    :param champ_dict: The results gathered that we're trying to print.
-    :return: Nothing. This simply prints to the console.
-    """
-
-    print("\t %-15s %5s %5s %5s" % ("Champion", "Win", "Lose", "Percent"))
-    for key in champ_dict:
-        win = champ_dict[key][0]
-        lose = champ_dict[key][1]
-        percent = round((float(win) / (float(win) + float(lose))) * 100.0, 2)
-        print("\t %-15s %5d %5d\t%.2f" % (champion_name_dict[key], win, lose, percent))
+def participant_has_item(participant, item_id=rylais_id):
+    stats = participant["stats"]
+    for i in range(7):
+        if stats["item{0}".format(i)] == item_id:
+            return True
+    return False
 
 
-def get_ap_champions_by_match(match):
+def participant_built_ap(participant):
     """
-    Gets a list of champions who built AP in a particular match.
-    :param match: The specific match to look at.
-    :return: An array of champions who built AP, and whether they won.
+    This function checks whether this participant built AP items. The threshold is that if at least two items were built
+    that qualifies as AP, then they 'built AP.'
+    :param participant: The participant in question.
+    :return: True if they 'built AP', false if they did not.
     """
-    champion_list = []
-    participants = match["participants"]
-    for p in participants:
-        if participant_built_ap(p):
-            # Found a player who built AP. Include the champion's ID and whether they won.
-            ap_champ = [p["championId"], p["stats"]["winner"]]
-            champion_list.append(ap_champ)
-    return champion_list
+    built_items = []
+    count = 0
+    for i in range(7):
+        built_items.append(participant["stats"]["item{0}".format(i)])
+    for item in built_items:
+        if item in ap_items:
+            count += 1
+    if count >= 2:  # built at least 2 ap items
+        return True
+    return False
+
+
+def get_core_ap_items_built(participant):
+    """
+    Gets a list of core AP items that the participant built.
+    :param participant: The particular participant whose items we want to know.
+    :return: An array of item IDs identifying what items he bought.
+    """
+    built_items = []
+    core = []
+    for i in range(7):
+        built_items.append(participant["stats"]["item{0}".format(i)])
+    for item in built_items:
+        if item in core_ap_items:
+            core.append(item)
+    return core
+
+
+def get_item_builders_by_match(match, item_id=rylais_id):
+    """
+    Returns a list of participants (by id) that built a specific item.
+    :param match: A json file of the match.
+    :param item_id: the item ID to search for in that match.
+    :return: An array of participant IDs.
+    """
+    builders = []
+    for participant_id in range(10):
+        if participant_has_item(match["participants"][participant_id-1], item_id):
+            builders.append(participant_id)
+    return builders
+
+
+#  Rylai's methods
 
 
 def was_rylais_built(participant):
@@ -246,6 +304,7 @@ def display_rylais_build_orders(match_count):
         for participant_id in ap_participants:
             valid_participant = was_rylais_built(match["participants"][participant_id-1])
 
+
 def rylais_build_order(match, participant):
     """
     This function figures out whether the participant built a Needlessly Large Rod first, or a Giant's Belt first.
@@ -254,28 +313,24 @@ def rylais_build_order(match, participant):
     :return: True if NLR was built first, False if Giant's Belt was built first. None if Rylai's wasnt even built.
     """
 
-def participant_has_item(participant, item_id=rylais_id):
-    stats = participant["stats"]
-    for i in range(7):
-        if stats["item{0}".format(i)] == item_id:
-            return True
-    return False
+
+#  Champion methods
 
 
-def get_core_ap_items_built(participant):
+def get_ap_champions_by_match(match):
     """
-    Gets a list of core AP items that the participant built.
-    :param participant: The particular participant whose items we want to know.
-    :return: An array of item IDs identifying what items he bought.
+    Gets a list of champions who built AP in a particular match.
+    :param match: The specific match to look at.
+    :return: An array of champions who built AP, and whether they won.
     """
-    built_items = []
-    core = []
-    for i in range(7):
-        built_items.append(participant["stats"]["item{0}".format(i)])
-    for item in built_items:
-        if item in core_ap_items:
-            core.append(item)
-    return core
+    champion_list = []
+    participants = match["participants"]
+    for p in participants:
+        if participant_built_ap(p):
+            # Found a player who built AP. Include the champion's ID and whether they won.
+            ap_champ = [p["championId"], p["stats"]["winner"]]
+            champion_list.append(ap_champ)
+    return champion_list
 
 
 def list_of_ap_participants(match):
@@ -292,25 +347,6 @@ def list_of_ap_participants(match):
             ap_participants.append(p["participantId"])
     # print(ap_participants)
     return ap_participants
-
-
-def participant_built_ap(participant):
-    """
-    This function checks whether this participant built AP items. The threshold is that if at least two items were built
-    that qualifies as AP, then they 'built AP.'
-    :param participant: The participant in question.
-    :return: True if they 'built AP', false if they did not.
-    """
-    built_items = []
-    count = 0
-    for i in range(7):
-        built_items.append(participant["stats"]["item{0}".format(i)])
-    for item in built_items:
-        if item in ap_items:
-            count += 1
-    if count >= 2:  # built at least 2 ap items
-        return True
-    return False
 
 
 def build_timeline_for_participant(match, participant_id, include_items=True, include_kills=True):
@@ -344,29 +380,9 @@ def build_timeline_for_participant(match, participant_id, include_items=True, in
     return timeline
 
 
-def get_item_builders_by_match(match, item_id=rylais_id):
-    """
-    Returns a list of participants (by id) that built a specific item.
-    :param match: A json file of the match.
-    :param item_id: the item ID to search for in that match.
-    :return: An array of participant IDs.
-    """
-    builders = []
-    for participant_id in range(10):
-        if participant_has_item(match["participants"][participant_id-1], item_id):
-            builders.append(participant_id)
-    return builders
-
-
+#  main method
 def main():
     generate_profiles(1)
-
-
-def main2():
-    pass
-    # calculate_frequency_of_roles(5)
-    # display_champion_win_rates(100)
-    # display_core_item_build_orders(1)
 
 
 if __name__ == "__main__":
