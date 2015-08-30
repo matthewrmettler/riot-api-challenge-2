@@ -3,7 +3,12 @@ from file_calls import get_match_list_by_type, get_sample_matches, open_match
 from api_calls import get_match, generate_champion_name_dictionary, \
     generate_list_of_ap_items, generate_ap_item_name_dictionary
 
+
+#  rylai's item IDs
+giants_belt_id = 1011
+nlr_id = 1058
 rylais_id = 3116
+
 [ap_items, core_ap_items] = generate_list_of_ap_items()
 
 champion_name_dict = generate_champion_name_dictionary()
@@ -25,22 +30,32 @@ class Profile():
         self.region = region
         self.queue = queue
 
-    def stats(self, result, kills, deaths, assists, final_build, shopping_trips, damage_done, damage_taken):
+        # initialize just in case
+        self.result = None
+        self.kills = 0
+        self.deaths = 0
+        self.assists = 0
+        self.final_build = []
+        self.build_order = []
+        self.shopping_trips = None
+        self.damage_done = 0
+        self.damage_taken = 0
+        self.has_rylais = False
+        self.rylais_order = -1
+
+    def stats(self, result, kills, deaths, assists, final_build, build_order, shopping_trips, damage_done,
+              damage_taken, has_rylais, rylais_order):
         self.result = result
         self.kills = kills
         self.deaths = deaths
         self.assists = assists
         self.final_build = final_build
+        self.build_order = build_order
         self.shopping_trips = shopping_trips
         self.damage_done = damage_done
         self.damage_taken = damage_taken
-
-    def built_rylais(self, has_rylais):
         self.has_rylais = has_rylais
-
-    def rylaisAnalysis(self, nlr_first, kda_by_stage):
-        self.nlr_first = nlr_first
-        self.kda_by_stage = kda_by_stage
+        self.rylais_order = rylais_order
 
 
 def generate_profiles(match_count):
@@ -68,18 +83,32 @@ def build_profile(match, match_type, participant_id):
     # Initialize Profile class with champion type and match type info
     champion = Profile(champ_id, match_type[0], match_type[1], match_type[2])
     get_profile_stats(champion, match, participant_id)
-    champion.built_rylais(was_rylais_built(p))
     return champion
 
 
 def get_profile_stats(profile, match, participant_id):
+    # initialize needed variables
     p = participant_frame(match, participant_id)
     stats = p["stats"]
-    build = final_build(p)
+    f_build = final_build(p)
+    build_order = core_item_build_order(match, participant_id)[1]
     shopping_trips = generate_shopping_trips(match, participant_id)
-    profile.stats(stats["winner"], stats["kills"], stats["deaths"], stats["assists"], build, shopping_trips,
-                  stats["totalDamageDealtToChampions"], stats["totalDamageTaken"])
 
+    # handle rylai's stuff
+    has_rylais = False
+    rylais_order = 0
+
+    if was_rylais_built(p):
+        for i in range(len(build_order)):
+            if build_order[i] == rylais_id:
+                has_rylais = True
+                rylais_order = i+1
+
+    # fill out stats
+    profile.stats(stats["winner"], stats["kills"], stats["deaths"], stats["assists"], f_build, build_order,
+                  shopping_trips, stats["totalDamageDealtToChampions"], stats["totalDamageTaken"], has_rylais,
+                  rylais_order)
+    return
 
 #  Display methods
 
@@ -305,9 +334,9 @@ class ShoppingTrip():
 
 
 class ItemPurchases():
-    def __init__(self, champion, matchId, purchases):
+    def __init__(self, champion, match_id, purchases):
         self.champion = champion
-        self.matchId = matchId
+        self.matchId = match_id
         self.purchases = purchases
 
 
@@ -318,16 +347,16 @@ def generate_shopping_trips(match, participant_id):
     :param participant_id: The person who we're looking at.
     :return: None, modifies the instance of the class.
     """
-    item_buy_threshold = 15000 #  How many milliseconds in between purchases for one trip
+    item_buy_threshold = 15000  # How many milliseconds in between purchases for one trip
     item_timeline = build_timeline_for_participant(match, participant_id, True, False)
 
     purchases = []
     count = 0
-    lastPurchaseTimestamp = item_timeline[0]["timestamp"]
+    last_purchase_timestemp = item_timeline[0]["timestamp"]
     items_bought = []
     times_bought = []
     for purchase in item_timeline:
-        if int(purchase["timestamp"]) - lastPurchaseTimestamp >= item_buy_threshold:
+        if int(purchase["timestamp"]) - last_purchase_timestemp >= item_buy_threshold:
             trip = ShoppingTrip(items_bought, sum(times_bought) / float(len(times_bought)), count)
 
             #  reset everything, increment count for next trip
@@ -338,12 +367,11 @@ def generate_shopping_trips(match, participant_id):
 
         items_bought.append(purchase["itemId"])
         times_bought.append(purchase["timestamp"])
-        lastPurchaseTimestamp = purchase["timestamp"]
+        last_purchase_timestemp = purchase["timestamp"]
 
     p = participant_frame(match, participant_id)
     champ_id = p["championId"]
     return ItemPurchases(champ_id, match["matchId"], purchases)
-
 
 
 #  Rylai's methods
@@ -358,37 +386,6 @@ def was_rylais_built(participant):
     return participant_has_item(participant)
 
 
-def display_rylais_build_orders(match_count):
-    """
-
-    :param match_count:
-    :return:
-    """
-
-    matches = get_sample_matches('5.11', 'RANKED_SOLO', 'BR', match_count)
-    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
-    # count = 0
-    for m in matches:
-        match = open_match(m)
-        '''
-        count += 1
-        if count % 50 == 0:
-            print(count)
-        '''
-        ap_participants = list_of_ap_participants(match)
-        for participant_id in ap_participants:
-            valid_participant = was_rylais_built(match["participants"][participant_id-1])
-
-
-def rylais_build_order(match, participant):
-    """
-    This function figures out whether the participant built a Needlessly Large Rod first, or a Giant's Belt first.
-    :param match: The specific match to look at.
-    :param participant: The particular participant whose items we want to know.
-    :return: True if NLR was built first, False if Giant's Belt was built first. None if Rylai's wasnt even built.
-    """
-
-
 #  Champion methods
 
 
@@ -400,6 +397,7 @@ def participant_frame(match, participant_id):
     :return: A dictionary with the contents of that participant.
     """
     return match["participants"][participant_id-1]
+
 
 def get_ap_champions_by_match(match):
     """
