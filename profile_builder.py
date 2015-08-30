@@ -74,7 +74,7 @@ def generate_profiles(match_count):
             profiles.append(build_profile(match, match_type, champ))
 
     print(len(profiles))
-    pass
+    return profiles
 
 
 def build_profile(match, match_type, participant_id):
