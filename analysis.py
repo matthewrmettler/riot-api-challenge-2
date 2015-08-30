@@ -48,6 +48,7 @@ def generate_profiles(match_count):
     matches = get_sample_matches(match_type[0], match_type[1], match_type[2], match_count)
     # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
     count = 0
+    profiles = []
     for m in matches:
         match = open_match(m)
         count += 1
@@ -55,23 +56,28 @@ def generate_profiles(match_count):
             print(count)
         ap_champions = list_of_ap_participants(match)
         for champ in ap_champions:
-            build_profile(match, match_type, champ)
+            profiles.append(build_profile(match, match_type, champ))
+
+    print(len(profiles))
     pass
 
 
 def build_profile(match, match_type, participant_id):
-    champ_id = match["participants"][participant_id-1]["championId"]
+    p = participant_frame(match, participant_id)
+    champ_id = p["championId"]
     # Initialize Profile class with champion type and match type info
     champion = Profile(champ_id, match_type[0], match_type[1], match_type[2])
     get_profile_stats(champion, match, participant_id)
-    champion.built_rylais(was_rylais_built(match["participants"][participant_id-1]))
+    champion.built_rylais(was_rylais_built(p))
+    return champion
 
 
 def get_profile_stats(profile, match, participant_id):
-    stats = match["participants"][participant_id-1]["stats"]
-    final_build = None # TODO: final build for profile
-    shopping_trips = None # TODO: implement shopping trips
-    profile.stats(stats["winner"], stats["kills"], stats["deaths"], stats["assists"], final_build, shopping_trips,
+    p = participant_frame(match, participant_id)
+    stats = p["stats"]
+    build = final_build(p)
+    shopping_trips = generate_shopping_trips(match, participant_id)
+    profile.stats(stats["winner"], stats["kills"], stats["deaths"], stats["assists"], build, shopping_trips,
                   stats["totalDamageDealtToChampions"], stats["totalDamageTaken"])
 
 
@@ -215,11 +221,31 @@ def core_item_build_order(match, participant_id):
 
 
 def participant_has_item(participant, item_id=rylais_id):
-    stats = participant["stats"]
-    for i in range(7):
-        if stats["item{0}".format(i)] == item_id:
+    """
+    Checks whether a particular item was built.
+    :param participant: The participant in question.
+    :param item_id: The ID associated with the item in question. Defaults to Rylai's Crystal Scepter (the main focus of
+    this project.)
+    :return: True if the item was in the final build, False if not.
+    """
+    built_items = final_build(participant)
+    for item in built_items:
+        if item == item_id:
             return True
     return False
+
+
+def final_build(participant):
+    """
+    Retrieves the final 7 items a participant built.
+    :param participant: The person whose final build we want to see.
+    :return: A 7 item array of integers
+    """
+    built_items = []
+
+    for i in range(7):
+        built_items.append(participant["stats"]["item{0}".format(i)])
+    return built_items
 
 
 def participant_built_ap(participant):
@@ -229,10 +255,8 @@ def participant_built_ap(participant):
     :param participant: The participant in question.
     :return: True if they 'built AP', false if they did not.
     """
-    built_items = []
+    built_items = final_build(participant)
     count = 0
-    for i in range(7):
-        built_items.append(participant["stats"]["item{0}".format(i)])
     for item in built_items:
         if item in ap_items:
             count += 1
@@ -247,10 +271,9 @@ def get_core_ap_items_built(participant):
     :param participant: The particular participant whose items we want to know.
     :return: An array of item IDs identifying what items he bought.
     """
-    built_items = []
+    built_items = final_build(participant)
     core = []
-    for i in range(7):
-        built_items.append(participant["stats"]["item{0}".format(i)])
+
     for item in built_items:
         if item in core_ap_items:
             core.append(item)
@@ -269,6 +292,58 @@ def get_item_builders_by_match(match, item_id=rylais_id):
         if participant_has_item(match["participants"][participant_id-1], item_id):
             builders.append(participant_id)
     return builders
+
+
+# Shopping Trip stuff
+
+
+class ShoppingTrip():
+        def __init__(self, items_bought, timestamp, order):
+            self.items = items_bought
+            self.time = timestamp
+            self.order = order
+
+
+class ItemPurchases():
+    def __init__(self, champion, matchId, purchases):
+        self.champion = champion
+        self.matchId = matchId
+        self.purchases = purchases
+
+
+def generate_shopping_trips(match, participant_id):
+    """
+    This method modifies the class to show what kind of shopping trips a champion took over the course of the game.
+    :param match: The match in question.
+    :param participant_id: The person who we're looking at.
+    :return: None, modifies the instance of the class.
+    """
+    item_buy_threshold = 15000 #  How many milliseconds in between purchases for one trip
+    item_timeline = build_timeline_for_participant(match, participant_id, True, False)
+
+    purchases = []
+    count = 0
+    lastPurchaseTimestamp = item_timeline[0]["timestamp"]
+    items_bought = []
+    times_bought = []
+    for purchase in item_timeline:
+        if int(purchase["timestamp"]) - lastPurchaseTimestamp >= item_buy_threshold:
+            trip = ShoppingTrip(items_bought, sum(times_bought) / float(len(times_bought)), count)
+
+            #  reset everything, increment count for next trip
+            count += 1
+            purchases.append(trip)
+            items_bought = []
+            times_bought = []
+
+        items_bought.append(purchase["itemId"])
+        times_bought.append(purchase["timestamp"])
+        lastPurchaseTimestamp = purchase["timestamp"]
+
+    p = participant_frame(match, participant_id)
+    champ_id = p["championId"]
+    return ItemPurchases(champ_id, match["matchId"], purchases)
+
 
 
 #  Rylai's methods
@@ -316,6 +391,15 @@ def rylais_build_order(match, participant):
 
 #  Champion methods
 
+
+def participant_frame(match, participant_id):
+    """
+    Helper method to get the dictionary associated with a participant in a specific match.
+    :param match: The match in question
+    :param participant_id: The id associated with the participant.
+    :return: A dictionary with the contents of that participant.
+    """
+    return match["participants"][participant_id-1]
 
 def get_ap_champions_by_match(match):
     """
