@@ -5,11 +5,11 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from profile_builder import Profile, generate_profiles
 
-engine = create_engine('sqlite:///temp/test.db', echo=True)
+engine = create_engine('sqlite:///profiles.db', echo=True)
 Base = declarative_base(bind=engine)
 
 def array_to_str(arr):
-    return " ".join(x for x in arr)
+    return " ".join(str(x) for x in arr)
 
 
 def str_to_array(str):
@@ -18,8 +18,9 @@ def str_to_array(str):
 
 class dbProfile(Base):
     __tablename__ = 'Profiles'
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key = True) # Going to use <champ_id><match_id> as unique ID
     champ_id = Column(Integer)
+    match_id = Column(Integer)
     patch = Column(String(6))
     region = Column(String(2))
     queue = Column(String(15))
@@ -37,7 +38,9 @@ class dbProfile(Base):
     rylais_order = Column(Integer)
 
     def __init__(self, profile):
+        self.id = str(profile.champ_id) + str(profile.match_id)
         self.champ_id = profile.champ_id
+        self.match_id = profile.match_id
         self.patch = profile.patch
         self.region = profile.region
         self.queue = profile.queue
@@ -60,13 +63,15 @@ def main():
     Session = sessionmaker(bind=engine)
     s = Session()
 
-    test_profile = generate_profiles(1)[0]
-    test_dbProfile = dbProfile(test_profile)
-    s.add_all(test_dbProfile)
+    test_profiles = generate_profiles(10)
+    for p in test_profiles:
+        db_p = dbProfile(p)
+        s.add(db_p)
+
     s.commit()
 
-    for p in s.query(dbProfile):
-        print type(p), p.champ_id, p.result, p.has_rylais
+    #for p in s.query(dbProfile):
+    #    print type(p), p.champ_id, p.result, p.has_rylais
 
 if __name__ == "__main__":
     main()

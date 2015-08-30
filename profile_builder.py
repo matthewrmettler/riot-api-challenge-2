@@ -1,5 +1,5 @@
 __author__ = 'Matt'
-from file_calls import get_match_list_by_type, get_sample_matches, open_match
+from file_calls import get_match_list_by_type, get_sample_matches, get_all_matches, open_match
 from api_calls import get_match, generate_champion_name_dictionary, \
     generate_list_of_ap_items, generate_ap_item_name_dictionary
 
@@ -24,8 +24,9 @@ class Profile():
     Using various function calls, fill out all these values, then build a database storing thousands of these
     for analysis.
     """
-    def __init__(self, champ_id, patch, region, queue):
+    def __init__(self, champ_id, match_id, patch, region, queue):
         self.champ_id = champ_id
+        self.match_id = match_id
         self.patch = patch
         self.region = region
         self.queue = queue
@@ -59,29 +60,35 @@ class Profile():
 
 
 def generate_profiles(match_count):
-    match_type = ['5.11', 'RANKED_SOLO', 'BR']
-    matches = get_sample_matches(match_type[0], match_type[1], match_type[2], match_count)
-    # matches = get_all_matches('5.11', 'RANKED_SOLO', 'BR')
-    count = 0
-    profiles = []
-    for m in matches:
-        match = open_match(m)
-        count += 1
-        if count % 50 == 0:
-            print(count)
-        ap_champions = list_of_ap_participants(match)
-        for champ in ap_champions:
-            profiles.append(build_profile(match, match_type, champ))
+    patches = ['5.11', '5.14']
+    queues = ['RANKED_SOLO', 'NORMAL_5X5']
+    regions = ['BR', 'EUNE', 'EUW', 'KR', 'LAN', 'NA', 'OCE', 'RU', 'TR']
+    for patch in patches:
+        for queue in queues:
+            for region in regions:
+                match_type = [patch, region, queue]
+                matches = get_sample_matches(match_type[0], match_type[1], match_type[2], match_count)
+                #matches = get_all_matches(match_type[0], match_type[1], match_type[2])
+                count = 0
+                profiles = []
+                for m in matches:
+                    match = open_match(m)
+                    count += 1
+                    if count % 50 == 0:
+                        print(count)
+                    ap_champions = list_of_ap_participants(match)
+                    for champ in ap_champions:
+                        profiles.append(build_profile(match, match_type, champ))
 
-    print(len(profiles))
-    return profiles
+                print(len(profiles))
+                return profiles
 
 
 def build_profile(match, match_type, participant_id):
     p = participant_frame(match, participant_id)
     champ_id = p["championId"]
     # Initialize Profile class with champion type and match type info
-    champion = Profile(champ_id, match_type[0], match_type[1], match_type[2])
+    champion = Profile(champ_id, match["matchId"], match_type[0], match_type[1], match_type[2])
     get_profile_stats(champion, match, participant_id)
     return champion
 

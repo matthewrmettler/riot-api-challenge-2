@@ -98,6 +98,7 @@ def generate_champion_name_dictionary():
 
     return champ_dict
 
+
 def generate_ap_item_name_dictionary():
     item_dict = {}
     ap_item_ids = generate_list_of_ap_items()[0]
