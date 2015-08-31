@@ -10,6 +10,8 @@
     -moz-background-size: cover;
     background-size: cover;
     -o-background-size: cover;
+
+    font-family: benton-sans, 'Helvetica Neue', helvetica, arial, sans-serif;
     color: #80acc4;
 }
 
@@ -32,12 +34,26 @@ table a:active {
     text-align: center;
 }
 
+.title {
+    color: #0e1723;
+    font-size: 48px;
+    text-align: center;
+    font-weight: bold;
+}
+.title-image {
+    width: 300px;
+    height: 300px;
+    display: block;
+    margin: auto;
+    padding: 15px 15px;
+}
 .section {
+    width: 80%;
     padding: 10px 10px;
-    margin: 100px 10px;
+    margin: 100px auto;
 }
 
-.section-title{
+.section-title {
     color: #0e1723;
     font-size: 48px;
     text-align: left;
@@ -47,6 +63,8 @@ table a:active {
 .section-content {
     padding: 10px 10px;
     background-color: rgba(55, 98, 134, 0.90);
+    text-align: left;
+    font-size: 16px;
 }
 
 .toc-list {
@@ -54,24 +72,28 @@ table a:active {
     text-align: left;
 }
 
-.toc-list a {
-    font-size: 20px;
+.section-content a {
+    font-size: 16px;
     font-style: italic;
     color: #003654;
 }
 
-.toc-list a:visited {
+.section-content a:visited {
     color: #003654;
 }
 
-.toc-list a:hover {
+.section-content a:hover {
     color: #fff;
 }
 
-.toc-list a:active {
+.section-content a:active {
     color: #271a24;
 }
 
+.table-container {
+    text-align: center;
+    font-size: 16px;
+}
 table {
     table-layout: fixed;
     width:80%;

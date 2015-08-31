@@ -18,53 +18,79 @@
 </head>
 <body>
     <div class="container">
+
+        <div class="section" id="title_section">
+            <div class="section-content">
+                <div class="title">Rylai's Resolve</div>
+                <img class="title-image" src="http://ddragon.leagueoflegends.com/cdn/5.2.1/img/item/3116.png" alt=""/>
+            </div>
+        </div>
+
         <div class="content">
 
+            <!-- Title -->
+
             <!-- Table of Contents -->
-            <div class="toc-container">
+            <div class="section" id="toc_section">
                 <div class="section-title">Table of Contents:</div>
-                    <ol class="toc-list">
-                        <li><a href="#intro_section">Introduction</a></li>
-                        <li><a href="#winrate_section">Overall Winrates</a></li>
-                        <li><a href="#pickrate_section">Overall Pickrates</a></li>
-                        <li><a href="#rylai_table_section">Rylai's Build Data (Table)</a></li>
-                        <li><a href="#rylai_barchart_section">Rylai's Build Data (Bar Chart)</a></li>
-                        <li><a href="#closing_section">Closing Thoughts</a></li>
-                        <li><a href="#info_section">Information About This Project</a></li>
-                    </ol>
+                    <div class="section-content">
+                        <ol class="toc-list">
+                            <li><a href="#intro_section">Introduction</a></li>
+                            <li><a href="#winrate_section">Overall Winrates</a></li>
+                            <li><a href="#pickrate_section">Overall Pickrates</a></li>
+                            <li><a href="#rylai_table_section">Rylai's Build Data (Table)</a></li>
+                            <li><a href="#rylai_barchart_section">Rylai's Build Data (Bar Chart)</a></li>
+                            <li><a href="#closing_section">Closing Thoughts</a></li>
+                            <li><a href="#info_section">Information About This Project</a></li>
+                        </ol>
+                    </div>
             </div>
 
             <!-- Introduction -->
             <div class="section" id="intro_section">
                 <div class="section-title">Introduction</div>
                 <div class="section-content">
-                    <p>Intro stuff here!</p>
+                    <p>Hey there! Welcome to Rylai's Resolve!</p>
+
+                    <p>This website was made for the <a href="http://na.leagueoflegends.com/en/news/community/contests/riot-games-api-challenge-20">Riot API Challenge.</a>
+                    I collected roughly 123,000 ranked matches across both patch 5.11 and 5.14, and started analyizing them. My goal with this project was to examine the second category: How did AP itemization change up the game? How did winrates and pickrates change?
+                    More specifically, I wanted to focus on one item in particular: Rylai's Crystal Scepter.
+                    <br/> <br/>
+                    I've always loved Rylai's, but it used to be kind of a niche pick. It didn't offer all that much AP, so it was mainly picked up by tankier frontline mages,
+                    such as Rumble or Vladimir. However, the changes to itemization not only made it contain more AP, but it also gave an amazing 40% slow on basically anything any mage did,
+                    making it a <b>much</b> more attractive item for people to build.
+                    <br/> <br/>
+                    So that's the question: did people build it? How successful was it? Let's try to take a look.</p>
                 </div>
             </div>
 
             <!-- Overall Winrates -->
             <div class="section" id="winrate_section">
                 <div class="section-title">Overall Winrates</div>
+                <div class="toc-list"><a href="#toc_section">Back to Top</a></div>
                 <div class="section-content">
                     <p>
-                        First, let's take at the overall winrate of all the AP champions.
+                        First, let's take at the overall winrate of all the AP champions (I'm defining an 'AP Champion' as anyone
+                        who had more than 50 games played with more than 2 AP items built over the course of the game.).
                         Click any column to sort by it,or shift-click to have that be the second sort option.
                         All rows are color-coded by the patch 5.14 winrate.
                     </p>
-                    <table id="winrate-table">
-                      <thead>
-                        <th>Champion Name</th>
-                        <th>Wins (5.11)</th>
-                        <th>Losses (5.11)</th>
-                        <th>Winrate (5.11)</th>
-                        <th>Wins (5.14)</th>
-                        <th>Losses (5.14)</th>
-                        <th>Winrate (5.14)</th>
-                        <th>Percent Change</th>
-                      </thead>
-                      <tbody>
-                      </tbody>
-                    </table>
+                    <div class="table-container">
+                        <table id="winrate-table">
+                          <thead>
+                            <th>Champion Name</th>
+                            <th>Wins (5.11)</th>
+                            <th>Losses (5.11)</th>
+                            <th>Winrate (5.11)</th>
+                            <th>Wins (5.14)</th>
+                            <th>Losses (5.14)</th>
+                            <th>Winrate (5.14)</th>
+                            <th>Percent Change</th>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -106,7 +132,13 @@
             <div class="section" id="info_section">
                 <div class="section-title">Information About This Project</div>
                 <div class="section-content">
-
+                    This project was made primarily in Python and Javascript, and is split into two parts: the analysis part, and the web app part.
+                    <br/><br/>
+                    Both the web app and the analysis were made using the PyCharm IDE. The analysis was written in Python 2.7, utilizing sqlite and SQLAlchemy. The web app
+                    was made in Flask, utilizing Javascript, jQuery, <a href="http://www.dynatable.com/">DynaTable</a>, and <a href="http://www.canvasjs.com/">CanvasJS</a>.
+                    Hosting for this web app is provided by <a href="http://www.heroku.com/">Heroku</a>, and all the code used to write this app can be found on its <a href="https://github.com/matthewrmettler/riot-api-challenge-2">GitHub page.</a>
+                    <br/><br/>
+                    Questions? Comments? Feedback? <a href="mailto:matthewrmettler@gmail.com?Subject=Rylais'%20Resolve%20Feedback">Reach out to me</a> and I'll get back to you as soon as I can. :)
                 </div>
             </div>
         </div>
