@@ -27,19 +27,53 @@ table a:active {
 }
 
 .content {
-    background-color: rgba(128, 172, 196, 0.75);
+    background-color: rgba(110, 151, 188, 0.75);
     padding: 30px 15px;
     text-align: center;
 }
 
+.section {
+    padding: 10px 10px;
+    margin: 100px 10px;
+}
 
-
-.count {
-    text-align: center;
+.section-title{
+    color: #0e1723;
+    font-size: 48px;
+    text-align: left;
     font-weight: bold;
 }
 
+.section-content {
+    padding: 10px 10px;
+    background-color: rgba(55, 98, 134, 0.90);
+}
+
+.toc-list {
+    color: #003654;
+    text-align: left;
+}
+
+.toc-list a {
+    font-size: 20px;
+    font-style: italic;
+    color: #003654;
+}
+
+.toc-list a:visited {
+    color: #003654;
+}
+
+.toc-list a:hover {
+    color: #fff;
+}
+
+.toc-list a:active {
+    color: #271a24;
+}
+
 table {
+    table-layout: fixed;
     width:80%;
     margin: auto auto;
     border-spacing: 0px;
@@ -48,17 +82,15 @@ table {
 th {
     width:20%;
     padding: 5px 5px;
-    position:relative;
-    background-color: rgba(0, 88, 136, 0.75);
+    position: relative;
+    background-color: rgba(128, 172, 196, 0.75);
     border: 1px solid black;
 }
 
 .dynatable-search {
     margin: 10px 5px;
-    padding: 15px 15px;
+    padding: 10px 10px;
     text-align: center;
-    background-color: rgba(0, 88, 136, 0.75);
-    border-radius: 2px;
     border: 0;
 }
 
@@ -70,11 +102,12 @@ input {
     border-radius: 2px;
     border: 0;
 }
+
 td {
     width:10%;
     padding: 3px 3px;
     position:relative;
-    background-color: rgba(0, 88, 136, 0.75);
+    background-color: rgba(0, 88, 136, 0.35);
     border: 1px solid black;
 }
 
@@ -85,6 +118,17 @@ td {
     text-align: center;
     border: 1px solid black;
 }
+
+.portrait {
+    border-radius: 5px;
+    width: 25px;
+    height: 25px;
+    border: 0;
+
+    float: left;
+    margin: 0 auto;
+}
+
 
 .name {
     text-align: center;

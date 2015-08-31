@@ -244,7 +244,7 @@ def generate_winrate_json(session, min_games=500):
         for row in winrate_data:
             winrate_511 = round((float(row.wins_511)/float(row.wins_511 + row.losses_511))*100.0, 2)
             winrate_514 = round((float(row.wins_514)/float(row.wins_514 + row.losses_514))*100.0, 2)
-            percent_change = round( ((winrate_514 - winrate_511) / (winrate_511))*100.0, 3)
+            percent_change = round( ((winrate_514 - winrate_511) / (winrate_511))*100.0, 1)
             json_array.append({"championName": champion_name_dict[row.champ_id],
                                "wins-(5.11)": row.wins_511,
                                "losses-(5.11)": row.losses_511,
