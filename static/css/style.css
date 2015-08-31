@@ -1,0 +1,106 @@
+/*!
+ * Start Bootstrap - Full HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+.full {
+    background: url('http://ddragon.leagueoflegends.com/cdn/img/champion/splash/Orianna_5.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    color: #80acc4;
+}
+
+table a {
+    color: #0a4263;
+}
+
+table a:active {
+    color: #005888;
+}
+
+.container {
+    background-color: rgba(0, 0, 0, .00);
+    margin: 200px auto;
+}
+
+.content {
+    background-color: rgba(128, 172, 196, 0.75);
+    padding: 30px 15px;
+    text-align: center;
+}
+
+
+
+.count {
+    text-align: center;
+    font-weight: bold;
+}
+
+table {
+    width:80%;
+    margin: auto auto;
+    border-spacing: 0px;
+}
+
+th {
+    width:20%;
+    padding: 5px 5px;
+    position:relative;
+    background-color: rgba(0, 88, 136, 0.75);
+    border: 1px solid black;
+}
+
+.dynatable-search {
+    margin: 10px 5px;
+    padding: 15px 15px;
+    text-align: center;
+    background-color: rgba(0, 88, 136, 0.75);
+    border-radius: 2px;
+    border: 0;
+}
+
+input {
+    margin: 5px 5px;
+    padding: 5px 10px;
+    text-align: center;
+    background-color: rgba(130, 154, 171, 0.75);
+    border-radius: 2px;
+    border: 0;
+}
+td {
+    width:10%;
+    padding: 3px 3px;
+    position:relative;
+    background-color: rgba(0, 88, 136, 0.75);
+    border: 1px solid black;
+}
+
+.header {
+    background-color: rgba(130, 154, 171, 0.75);
+    margin: 20px auto;
+    padding: 5px 5px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.name {
+    text-align: center;
+    font-style: italic;
+}
+
+.warning {
+    padding: 5px 5px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.notice {
+    padding: 5px 5px;
+    text-align: center;
+    font-style: italic;
+    font-size: 11px;
+}
+

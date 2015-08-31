@@ -5,4 +5,4 @@ def array_to_str(arr):
 
 
 def str_to_array(str):
-    return str.split(' ')
+    return map(int, str.split(' '))

@@ -1,18 +1,42 @@
 <html>
     <head>
 
-        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="js/jquery.dynatable.js"></script>
     </head>
     <body>
-        <table id="test-table">
+        <table id="winrate-table">
           <thead>
-            <th>Champion</th>
-            <th>Wins</th>
-            <th>Losses</th>
-            <th>Patch</th>
+            <th>Champion Name</th>
+            <th>Wins (5.11)</th>
+            <th>Losses (5.11)</th>
+            <th>Winrate (5.11)</th>
+            <th>Wins (5.14)</th>
+            <th>Losses (5.14)</th>
+            <th>Winrate (5.14)</th>
+            <th>Percent Change</th>
           </thead>
           <tbody>
           </tbody>
         </table>
+
+        <table id="winrate-rylais-table">
+          <thead>
+            <th>Champion Name</th>
+            <th>Winrate (No Rylais)</th>
+            <th>Winrate (First Item)</th>
+            <th>Winrate (Second Item)</th>
+            <th>Winrate (Third Item)</th>
+            <th>Winrate (Fourth Item)</th>
+            <th>Winrate (Fifth Item)</th>
+            <th>Winrate (Sixth Item)</th>
+            <th>Percent Change</th>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+
+    <script src="js/tables.js"></script>
+
     </body>
 </html>
