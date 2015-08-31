@@ -113,8 +113,8 @@ def load_match(match_id, patch='5.14', queue="RANKED_SOLO", region='NA'):
 def open_match(m):
     """
     Open a match file.
-    :param m: A string that references the absolute location of that match in JSON.
-    :return: A JSON file representing that match.
+    :param m: A string that references the absolute location of that match in json.
+    :return: A json file representing that match.
     """
     with open(m, 'r') as f:
         try:
@@ -156,10 +156,7 @@ def get_all_matches(patch='5.14', queue="RANKED_SOLO", region='NA'):
 
 def main():
     patches = ['5.11', '5.14']
-    #queues = ['RANKED_SOLO', 'NORMAL_5X5']
-
     regions = ['BR', 'EUNE', 'EUW', 'KR', 'LAN', 'NA', 'OCE', 'RU', 'TR'] # master list don't change
-    #regions = ['OCE', 'RU', 'TR']  # skip certain regions with this one
 
     for patch in patches:
             for region in regions:

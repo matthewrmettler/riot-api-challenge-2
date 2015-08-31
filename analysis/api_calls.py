@@ -138,7 +138,7 @@ def get_match(match_id, region):
     """
     Load a specific match with its map ID.
     :param match_id: The ID identifying the specific match we're trying to look at.
-    :return: A JSON object representing the match, or an error code representing that it wasn't found.
+    :return: A json object representing the match, or an error code representing that it wasn't found.
     """
     match_call = call_api("api/lol/{r}/v2.2/match/".format(r=region.lower()), match_id,
                           "?includeTimeline=true&", region.lower())

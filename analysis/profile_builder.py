@@ -237,7 +237,7 @@ def calculate_frequency_of_roles(match_count):
 def core_item_build_order(match, participant_id):
     """
     Generates the order in which a participant finishes core AP items.
-    :param match: The match in question (JSON file)
+    :param match: The match in question (json file)
     :param participant_id: The participant in question.
     :return: A 2-item array, ['champion name', 'items built'], where 'items built' is also an array.
     """
@@ -386,7 +386,7 @@ def generate_shopping_trips(match, participant_id):
 def was_rylais_built(participant):
     """
     Checks whether Rylai's was built.
-    :param participant: The participant's JSON data.
+    :param participant: The participant's json data.
     :return: True if it was built, false otherwise.
     """
     return participant_has_item(participant)
@@ -424,7 +424,7 @@ def get_ap_champions_by_match(match):
 def list_of_ap_participants(match):
     """
     This function returns a list of participant IDs who built AP in a given match.
-    :param match: A JSON file representing a match.
+    :param match: A json file representing a match.
     :return: An array of integers representing IDs of participants who built AP items.
     """
     ap_participants = []
