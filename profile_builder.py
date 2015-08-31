@@ -61,18 +61,17 @@ class Profile():
 
 def generate_profiles(match_count):
     patches = ['5.11', '5.14']
-    queues = ['RANKED_SOLO', 'NORMAL_5X5']
     regions = ['BR', 'EUNE', 'EUW', 'KR', 'LAN', 'NA', 'OCE', 'RU', 'TR']
+    profiles = []
+    count = 0
     for patch in patches:
-        for queue in queues:
             for region in regions:
-                match_type = [patch, region, queue]
+                match_type = [patch, 'RANKED_SOLO', region]
                 matches = get_sample_matches(match_type[0], match_type[1], match_type[2], match_count)
-                #matches = get_all_matches(match_type[0], match_type[1], match_type[2])
-                count = 0
-                profiles = []
                 for m in matches:
                     match = open_match(m)
+                    if isinstance(match, int): continue
+                    if not match: continue
                     count += 1
                     if count % 50 == 0:
                         print(count)
@@ -80,8 +79,8 @@ def generate_profiles(match_count):
                     for champ in ap_champions:
                         profiles.append(build_profile(match, match_type, champ))
 
-                print(len(profiles))
-                return profiles
+    print("{0} profiles generated.".format(len(profiles)))
+    return profiles
 
 
 def build_profile(match, match_type, participant_id):

@@ -23,10 +23,13 @@ def verify(patch, queue, region):
     :return: True if the parameters are valid, False if not.
     """
     if patch not in ['5.11', '5.14']:
+        print('Not right patch!')
         return False
     if queue not in ['RANKED_SOLO', 'NORMAL_5X5']:
+        print('Not right queue!')
         return False
     if region not in ['BR', 'EUNE', 'EUW', 'KR', 'LAN', 'NA', 'OCE', 'RU', 'TR']:
+        print('Not right region!')
         return False
     return True
 
@@ -114,7 +117,14 @@ def open_match(m):
     :return: A JSON file representing that match.
     """
     with open(m, 'r') as f:
-        return json.load(f)
+        try:
+            json_file = json.load(f)
+        except ValueError:
+            return None
+        except IOError:
+            return None
+        else:
+            return json_file
 
 
 def get_sample_matches(patch='5.14', queue="RANKED_SOLO", region='NA', count=100):
@@ -126,7 +136,7 @@ def get_sample_matches(patch='5.14', queue="RANKED_SOLO", region='NA', count=100
     file_loc = base_dir + '/{p}/{q}/{r}/'.format(p=patch, q=queue, r=region)
 
     files = glob.glob(file_loc + "/*.json")
-    file_sample = random.sample(files, count)
+    file_sample = random.sample(files, min(count, len(files)))
     return file_sample
 
 
@@ -146,17 +156,16 @@ def get_all_matches(patch='5.14', queue="RANKED_SOLO", region='NA'):
 
 def main():
     patches = ['5.11', '5.14']
-    queues = ['RANKED_SOLO', 'NORMAL_5X5']
+    #queues = ['RANKED_SOLO', 'NORMAL_5X5']
 
-    # regions = ['BR', 'EUNE', 'EUW', 'KR', 'LAN', 'NA', 'OCE', 'RU', 'TR'] # master list don't change
-    regions = ['OCE', 'RU', 'TR']  # skip certain regions with this one
+    regions = ['BR', 'EUNE', 'EUW', 'KR', 'LAN', 'NA', 'OCE', 'RU', 'TR'] # master list don't change
+    #regions = ['OCE', 'RU', 'TR']  # skip certain regions with this one
 
     for patch in patches:
-        for queue in queues:
             for region in regions:
-                r = get_match_list_by_type(patch, queue, region)
+                r = get_match_list_by_type(patch, 'RANKED_SOLO', region)
                 for item in r:
-                    write_match_by_type(item, '5.14', queue, region)
+                    write_match_by_type(item, patch, 'RANKED_SOLO', region)
 
 if __name__ == '__main__':
     main()

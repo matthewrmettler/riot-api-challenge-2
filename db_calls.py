@@ -5,7 +5,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from profile_builder import Profile, generate_profiles
 
-engine = create_engine('sqlite:///profiles.db', echo=True)
+average = 1097 #average number of games played
+
+# list of DBs
+engine = create_engine('sqlite:///profiles.db')
 Base = declarative_base(bind=engine)
 
 def array_to_str(arr):
@@ -58,20 +61,79 @@ class dbProfile(Base):
         self.rylais_order = profile.rylais_order
 
 
+class WinRate(Base):
+    __tablename__ = 'winrates'
+    id = Column(Integer, primary_key=True)
+    champ_id = Column(Integer)
+    wins = Column(Integer)
+    losses = Column(Integer)
+    patch = Column(String(6))
+
+    def __init__(self, champ_id, wins, losses, patch):
+        self.id = int(patch[2:] + "000" + str(champ_id))
+        self.champ_id = champ_id
+        self.wins = wins
+        self.losses = losses
+        self.patch = patch
+
+
+def populate_win_rate_table(session):
+    winrate_dict_511 = generate_win_rate_dictionary(session, '5.11')
+    winrate_dict_514 = generate_win_rate_dictionary(session, '5.14')
+
+    for item in winrate_dict_511.keys():
+        array = [item, winrate_dict_511[item][0], winrate_dict_511[item][1]]
+        item_db = WinRate(array[0], array[1], array[2], '5.11')
+        session.merge(item_db)
+
+    for item in winrate_dict_514:
+        array = [item, winrate_dict_514[item][0], winrate_dict_514[item][1]]
+        item_db = WinRate(array[0], array[1], array[2], '5.14')
+        session.merge(item_db)
+
+    session.commit()
+
+
+def generate_win_rate_dictionary(session, patch_no):
+    winrates = {}
+    for profile in session.query(dbProfile).filter_by(patch=patch_no):
+        if profile.patch == '5.11':
+            if profile.champ_id not in winrates:
+                winrates[profile.champ_id] = [0]*2
+            if profile.result:
+                winrates[profile.champ_id][0] += 1
+            else:
+                winrates[profile.champ_id][1] += 1
+        else:
+            if profile.champ_id not in winrates:
+                winrates[profile.champ_id] = [0]*2
+            if profile.result:
+                winrates[profile.champ_id][0] += 1
+            else:
+                winrates[profile.champ_id][1] += 1
+    return winrates
+
+
+def populate_main_db(session):
+    print("populate_main_db")
+
+    test_profiles = generate_profiles(1)
+    for p in test_profiles:
+        db_p = dbProfile(p)
+        session.merge(db_p)
+
+    session.commit()
+
+
 def main():
     Base.metadata.create_all()
     Session = sessionmaker(bind=engine)
     s = Session()
+    print("session created")
 
-    test_profiles = generate_profiles(10)
-    for p in test_profiles:
-        db_p = dbProfile(p)
-        s.add(db_p)
-
-    s.commit()
-
-    #for p in s.query(dbProfile):
-    #    print type(p), p.champ_id, p.result, p.has_rylais
+    #populate_main_db(s)
+    #populate_win_rate_table(s)
+    calculate_std(s)
 
 if __name__ == "__main__":
     main()
