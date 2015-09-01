@@ -102,6 +102,73 @@ class RylaisOrder(Base):
 # Table population methods
 
 
+class RylaisDamage(Base):
+    __tablename__ = 'rylais_damage'
+    champ_id = Column(Integer, primary_key=True)
+    kills_rylais = Column(REAL(5))
+    kills_without = Column(REAL(5))
+    deaths_rylais = Column(REAL(5))
+    deaths_without = Column(REAL(5))
+    assists_rylais = Column(REAL(5))
+    assists_without = Column(REAL(5))
+    kda_rylais = Column(REAL(5))
+    kda_without = Column(REAL(5))
+    damage_done_rylais = Column(REAL(5))
+    damage_done_without = Column(REAL(5))
+    damage_taken_rylais = Column(REAL(5))
+    damage_taken_without = Column(REAL(5))
+    damage_ratio_rylais = Column(REAL(5))
+    damage_ratio_without = Column(REAL(5))
+
+    def __init__(self, champ_id, k_r, k_w, d_r, d_w, a_r, a_w, kda_r, kda_w, dd_r, dd_w, dt_r, dt_w, dr_r, dr_w):
+        self.champ_id = champ_id
+        self.kills_rylais = k_r
+        self.kills_without = k_w
+        self.deaths_rylais = d_r
+        self.deaths_without = d_w
+        self.assists_rylais = a_r
+        self.assists_without = a_w
+        self.kda_rylais = kda_r
+        self.kda_without = kda_w
+        self.damage_done_rylais = dd_r
+        self.damage_done_without = dd_w
+        self.damage_taken_rylais = dt_r
+        self.damage_taken_without = dt_w
+        self.damage_ratio_rylais = dr_r
+        self.damage_ratio_without = dr_w
+
+
+def populate_rylais_damage_table(session):
+    rylais_dict = generate_rylais_damage_dictionary(session)
+    keys = rylais_dict.keys()
+
+    for champ in keys:
+        games_with = float(rylais_dict[champ][0][0])
+        if games_with <= 125 :
+            continue  # don't include champs with little to no rylai's
+        games_without = float(rylais_dict[champ][1][0])
+        kills_rylais = round(float(rylais_dict[champ][0][1]) / games_with, 2)
+        kills_without = round(float(rylais_dict[champ][1][1]) / games_without, 2)
+        deaths_rylais = round(float(rylais_dict[champ][0][2]) / games_with, 2)
+        deaths_without = round(float(rylais_dict[champ][1][2]) / games_without, 2)
+        assists_rylais = round(float(rylais_dict[champ][0][3]) / games_with, 2)
+        assists_without = round(float(rylais_dict[champ][1][3]) / games_without, 2)
+        kda_rylais = round((kills_rylais + assists_rylais) / (deaths_rylais), 2)
+        kda_without = round((kills_without + assists_without) / (deaths_without), 2)
+        damage_done_rylais = round(float(rylais_dict[champ][0][4]) / games_with, 2)
+        damage_done_without = round(float(rylais_dict[champ][1][4]) / games_without, 2)
+        damage_taken_rylais = round(float(rylais_dict[champ][0][5]) / games_with, 2)
+        damage_taken_without = round(float(rylais_dict[champ][1][5]) / games_without, 2)
+        damage_ratio_rylais = round(damage_done_rylais / damage_taken_rylais, 2)
+        damage_ratio_without = round(damage_done_without / damage_taken_without, 2)
+
+        rylai_damage = RylaisDamage(champ, kills_rylais, kills_without, deaths_rylais, deaths_without,
+                                    assists_rylais, assists_without, kda_rylais, kda_without, damage_done_rylais,
+                                    damage_done_without, damage_taken_rylais, damage_taken_without, damage_ratio_rylais, damage_ratio_without)
+        session.merge(rylai_damage)
+
+    session.commit()
+
 def populate_rylais_order_table(session):
     rylais_dict = generate_rylais_order_dictionary(session)
     keys = rylais_dict.keys()
@@ -228,7 +295,29 @@ def generate_rylais_order_dictionary(session):
                 rylais_dict[profile.champ_id][0][1] += 1
     return rylais_dict
 
+
+def generate_rylais_damage_dictionary(session):
+    rylais_dict = {}
+    # array structure: [games_with, kills, deaths, assists, damage done, damage taken]
+    for profile in session.query(dbProfile).filter_by(patch='5.14'):
+        if profile.champ_id not in rylais_dict:
+            rylais_dict[profile.champ_id] = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+        if profile.has_rylais:
+            i = 0
+        else:
+            i = 1
+        rylais_dict[profile.champ_id][i][0] += 1 #games_with
+        rylais_dict[profile.champ_id][i][1] += profile.kills
+        rylais_dict[profile.champ_id][i][2] += profile.deaths
+        rylais_dict[profile.champ_id][i][3] += profile.assists
+        rylais_dict[profile.champ_id][i][4] += profile.damage_done
+        rylais_dict[profile.champ_id][i][5] += profile.damage_taken
+
+    return rylais_dict
+
+
 # json methods
+
 
 def generate_winrate_json(session, min_games=500):
     winrate_data = session.query(WinRate).filter((WinRate.wins_511 + WinRate.losses_511 + WinRate.wins_514 + WinRate.losses_514) >= min_games)
@@ -265,6 +354,7 @@ def generate_pickrate_json(session, min_games=250):
                                })
         json.dump(json_array, f)
 
+
 def generate_rylais_json(session, min_purchased=125):
     rylais_data = session.query(RylaisOrder).filter(RylaisOrder.total_games_built >= min_purchased)
     print(rylais_data.count())
@@ -298,6 +388,30 @@ def generate_rylais_json(session, min_purchased=125):
                                "percentDifference": percent_change
                                })
         json.dump(json_array, f)
+
+
+def generate_damage_json(session):
+    rylais_data = session.query(RylaisDamage)
+    print(rylais_data.count())
+    json_array = []
+    with open('../static/json/damage.json', 'wb') as f:
+        for row in rylais_data:
+            kda_change = round(((float(row.kda_rylais) - float(row.kda_without))/(row.kda_without))*100.0, 2)
+            json_array.append({"championName": champion_name_dict[row.champ_id],
+                            "rylaisKills": row.kills_rylais,
+                            "rylaisDeaths": row.deaths_rylais,
+                            "rylaisAssists": row.assists_rylais,
+                            "withoutKills": row.kills_without,
+                            "withoutDeaths": row.deaths_without,
+                            "withoutAssists": row.assists_without,
+                            "rylaisDamageRatio": row.damage_ratio_rylais,
+                            "withoutDamageRatio": row.damage_ratio_without,
+                            "rylaisKda": row.kda_rylais,
+                            "withoutKda": row.kda_without,
+                            "kdapercentChange": kda_change,
+                   })
+        json.dump(json_array, f)
+
 def main():
     # Set up SQLAlchemy.
     Base.metadata.create_all()
@@ -308,9 +422,13 @@ def main():
     # populate_profiles_table(s)
     # populate_win_rate_table(s)
     # generate_winrate_json(s)
+
     # populate_rylais_order_table(s)
     # generate_pickrate_json(s)
-    generate_rylais_json(s)
+    # generate_rylais_json(s)
+
+    #populate_rylais_damage_table(s)
+    generate_damage_json(s)
 
 if __name__ == "__main__":
     main()

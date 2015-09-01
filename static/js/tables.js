@@ -36,6 +36,23 @@ var colorRows = function () {
             $(this).css("background-color",  colorGradient[5])
         }
     });
+
+    $("#damage-table").find("tr").each(function () {
+        var kda = $(this).find('td').eq(11).text();
+        if (parseFloat(kda) >= 25.0) {
+            $(this).css("background-color", colorGradient[0])
+        } else if (parseFloat(kda) >= 20.0) {
+            $(this).css("background-color",  colorGradient[1])
+        } else if (parseFloat(kda) >= 15.0) {
+            $(this).css("background-color",  colorGradient[2])
+        } else if (parseFloat(kda) >= 10.0) {
+            $(this).css("background-color",  colorGradient[3])
+        } else if (parseFloat(kda) >= 5.0) {
+            $(this).css("background-color",  colorGradient[4])
+        } else {
+            $(this).css("background-color",  colorGradient[5])
+        }
+    });
 };
 
 //add icons to champ name
@@ -48,6 +65,13 @@ var portraits = function() {
     });
 
     $("#rylais-table").find("tr").each(function () {
+        var championCell = $(this).find('td').eq(0);
+        var championName = championCell.text();
+        var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
+        $(championCell).prepend(portrait);
+    });
+
+    $("#damage-table").find("tr").each(function () {
         var championCell = $(this).find('td').eq(0);
         var championName = championCell.text();
         var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
@@ -77,6 +101,20 @@ $.getJSON( "https://api.myjson.com/bins/2zev2", function( data ) {
 //rylais table
 $.getJSON("https://api.myjson.com/bins/59rda", function( data ) {
     $('#rylais-table').dynatable({
+        dataset: {
+            records: data,
+            perPageDefault: 100
+        },
+        features: {
+            paginate: false,
+            recordCount: false
+        }
+    }).bind('dynatable:afterProcess', updateWinrate);
+});
+
+//damage table
+$.getJSON("https://api.myjson.com/bins/3np3a", function( data ) {
+    $('#damage-table').dynatable({
         dataset: {
             records: data,
             perPageDefault: 100

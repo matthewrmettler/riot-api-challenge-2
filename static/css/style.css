@@ -64,6 +64,7 @@ table a:active {
     background-color: rgba(55, 98, 134, 0.90);
     text-align: left;
     font-size: 16px;
+    border: 2px solid black;
 }
 .back-to-top-bar {
     margin-left: auto;
@@ -83,19 +84,27 @@ table a:active {
 .section-content a {
     font-size: 16px;
     font-style: italic;
-    color: #003654;
-}
-
-.section-content a:visited {
-    color: #003654;
-}
-
-.section-content a:hover {
     color: #fff;
 }
 
+.section-content a:visited {
+    color: #fff;
+}
+
+.section-content a:hover {
+    color: #EEA7B5;
+}
+
 .section-content a:active {
-    color: #271a24;
+    color: #EEA7B5;
+}
+
+.toc-list {
+    font-size: 18px;
+}
+
+li {
+    font-size: 20px;
 }
 
 .table-container {
