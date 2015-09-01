@@ -85,7 +85,7 @@ table a:active {
 }
 
 .section-content a {
-    font-size: 16px;
+    font-size: 14px;
     font-style: italic;
     color: #fff;
 }
@@ -102,6 +102,11 @@ table a:active {
     color: #EEA7B5;
 }
 
+.emphasis {
+    color: #EEA7B5;
+    font-weight: bold;
+    font-size: 16px;
+}
 .toc-list {
     color: #fff;
     font-size: 18px;
@@ -123,9 +128,10 @@ table {
 }
 
 th {
-    width:20%;
+    width: 20%;
     padding: 5px 5px;
     position: relative;
+    font-size: 14px;
     background-color: rgba(128, 172, 196, 0.75);
     border: 1px solid black;
 }

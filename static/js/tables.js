@@ -59,23 +59,29 @@ var colorRows = function () {
 var portraits = function() {
     $("#winrate-table").find("tr").each(function () {
         var championCell = $(this).find('td').eq(0);
-        var championName = championCell.text();
-        var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
-        $(championCell).prepend(portrait);
+        if (!championCell.find('img').length) {
+            var championName = championCell.text();
+            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
+            $(championCell).prepend(portrait);
+        }
     });
 
     $("#rylais-table").find("tr").each(function () {
         var championCell = $(this).find('td').eq(0);
-        var championName = championCell.text();
-        var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
-        $(championCell).prepend(portrait);
+        if (!championCell.find('img').length)  {
+            var championName = championCell.text();
+            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
+            $(championCell).prepend(portrait);
+        }
     });
 
     $("#damage-table").find("tr").each(function () {
         var championCell = $(this).find('td').eq(0);
-        var championName = championCell.text();
-        var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
-        $(championCell).prepend(portrait);
+        if (!championCell.find('img').length) {
+            var championName = championCell.text();
+            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
+            $(championCell).prepend(portrait);
+        }
     });
 };
 
@@ -85,6 +91,7 @@ var updateWinrate = function() {
 };
 
 //winrate table
+//If this stops working, use the json file at static/json/winrate.json
 $.getJSON( "https://api.myjson.com/bins/2zev2", function( data ) {
     $('#winrate-table').dynatable({
         dataset: {
@@ -99,6 +106,7 @@ $.getJSON( "https://api.myjson.com/bins/2zev2", function( data ) {
 });
 
 //rylais table
+//If this stops working, use the json file at static/json/rylais.json
 $.getJSON("https://api.myjson.com/bins/59rda", function( data ) {
     $('#rylais-table').dynatable({
         dataset: {
@@ -113,6 +121,7 @@ $.getJSON("https://api.myjson.com/bins/59rda", function( data ) {
 });
 
 //damage table
+//If this stops working, use the json file at static/json/damage.json
 $.getJSON("https://api.myjson.com/bins/3np3a", function( data ) {
     $('#damage-table').dynatable({
         dataset: {

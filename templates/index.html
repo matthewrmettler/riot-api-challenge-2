@@ -33,7 +33,7 @@
             <!-- Table of Contents -->
             <div class="section" id="toc_section">
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/toc_bar.jpg') }}" alt="Table of Contents:"/>
+                    <img src="{{ url_for('static', filename='../images/toc_bar.png') }}" alt="Table of Contents:"/>
                 </div>
                     <div class="section-content">
                         <ol class="toc-list">
@@ -52,7 +52,7 @@
             <div class="section" id="intro_section">
                 <!-- <div class="section-title">Introduction</div> -->
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/intro_bar.jpg') }}" alt="Introduction"/>
+                    <img src="{{ url_for('static', filename='../images/intro_bar.png') }}" alt="Introduction"/>
                 </div>
                 <div class="section-content">
                     <p>Hey there! Welcome to Rylai's Resolve!</p>
@@ -72,7 +72,7 @@
             <!-- Overall Winrates -->
             <div class="section" id="winrate_section">
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/winrates_bar.jpg') }}" alt="Overall Winrates:"/>
+                    <img src="{{ url_for('static', filename='../images/winrates_bar.png') }}" alt="Overall Winrates:"/>
                 </div>
 
                 <div class="section-content">
@@ -111,10 +111,10 @@
             <!-- Overall Pickrates -->
             <div class="section" id="playrate_section">
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/playrates_bar.jpg') }}" alt="Overall Playrates:"/>
+                    <img src="{{ url_for('static', filename='../images/playrates_bar.png') }}" alt="Overall Playrates:"/>
                 </div>
                 <div class="section-content">
-                    <p>Due to poor planning on my part, I did not get ban rates. Sorry! However, we do have overall pick rates, and we can see them in the bar graph below:</p>
+                    <p>Next up are the overall pick rates. Did different mages pop up and take 5.14 by storm? Let's take a look:</p>
 
                 <div id="playrateChartContainer" style="height: 400px; width: 100%;"></div>
 
@@ -122,7 +122,8 @@
                 However, overall, the top 15 most popular midlaners did not change at all. They might have shuffled around a bit, but this solid core is still solid, and while champions below these top 15 might have seen increases,
                 the ones at the top stayed at the top.
 
-                But none of what we've seen so far says anything about Rylai's, and that's the focus of this analysis. Let's go take a look at that!</p>
+                But none of what we've seen so far says anything about Rylai's, and that's the focus of this analysis. <b>From this point on, everything we talk about is strictly patch 5.14.</b>
+                <br/><br/>Let's go take a look at Rylais!</p>
 
                 <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
@@ -131,7 +132,7 @@
             <!-- Rylai's Build Data (Table) -->
             <div class="section" id="rylai_table_section">
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/rylais_build_bar.jpg') }}" alt="Rylai's Build Data:"/>
+                    <img src="{{ url_for('static', filename='../images/rylais_build_bar.png') }}" alt="Rylai's Build Data:"/>
                 </div>
                 <div class="section-content">
                     <p>Our goal here is to see who built Rylai's, in what order, and what the winrates are in that order. I excluded any champions who had less than
@@ -162,7 +163,7 @@
                         I want you to sort by the 'percent diffence' column. This will show you the change in winrate between building it and not building it.
                         Now this is just one sample of many, but it is out of 130,000 games, and I intentionally only included people who built a significant amount of Rylai's. However, there's a surprising result here:
 
-                        <br/><br/><b>Not a single person's winrate goes down from building a Rylai's.</b><br/><br/>
+                        <br/><br/><div class="emphasis">Not a single person's winrate goes down from building a Rylai's.</div><br/><br/>
 
                         Either it has no noticeable impact, or their winrate goes up drastically (in the case of Karthus, up to 30%!).
                         if you look at the most-benefitting champions, they're all mages who provide significant sustained DPS moreso than burst: Karthus, Cassiopeia, Singed, and Fiddlesticks all benefit if you're not able to get away from them,
@@ -183,7 +184,7 @@
             <!-- Rylai's Build Data (Bar Chart) -->
             <div class="section" id="rylai_damage_section">
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/rylai_damage_bar.jpg') }}" alt="Rylai's Damage Table"/>
+                    <img src="{{ url_for('static', filename='../images/rylai_damage_bar.png') }}" alt="Rylai's Damage Table"/>
                 </div>
                 <div class="section-content">
                     <p>
@@ -223,9 +224,10 @@
                 </div>
                 <div class="section-content">
                 <p>
-                I did not get to cover as much as I would like, due to time constraints, but I found this project incredibly interesting. I knew
+                This project merely scratches the tip of the iceberg as far as data and its various applications. I knew
                 Rylai's was a strong item, but I did not expect such drastic winrate increases for champions in the 30% increase range,
-                nor did I expect literally everyone to benefit from building a Rylai's.
+                nor did I expect literally everyone to benefit from building a Rylai's. Lots of data was in line with what you would expect
+                (high DPS mages benefitting from the slow), yet there are still surprising results in every table.
                 <br/><br/>
                 What did you find interesting? Were you surprised by any results? Is something not adding up? <a href="mailto:matthewrmettler@gmail.com?Subject=Rylais'%20Resolve%20Feedback">Reach out to me</a> and let me know!
                 Feel free to read the info section below for more information on how I did this, or to reach out to me with questions, comments, or concerns! :)
