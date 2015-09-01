@@ -36,7 +36,7 @@
                     <img src="{{ url_for('static', filename='../images/toc_bar.png') }}" alt="Table of Contents:"/>
                 </div>
                     <div class="section-content">
-                        <ol class="toc-list">
+                        <ul class="toc-list">
                             <li><a href="#intro_section">Introduction</a></li><br/>
                             <li><a href="#winrate_section">Overall Winrates</a></li><br/>
                             <li><a href="#playrate_section">Overall Playrates</a></li><br/>
@@ -44,7 +44,7 @@
                             <li><a href="#rylai_damage_section">Rylai's Damage Data</a></li><br/>
                             <li><a href="#closing_section">Closing Thoughts</a></li><br/>
                             <li><a href="#info_section">Project Information</a></li>
-                        </ol>
+                        </ul>
                     </div>
             </div>
 
@@ -57,15 +57,17 @@
                 <div class="section-content">
                     <p>Hey there! Welcome to Rylai's Resolve!</p>
 
-                    <p>This website was made for the <a href="http://na.leagueoflegends.com/en/news/community/contests/riot-games-api-challenge-20">Riot API Challenge.</a>
-                    I collected roughly 123,000 ranked matches across both patch 5.11 and 5.14, and started analyizing them. My goal with this project was to examine the second category: How did AP itemization change up the game? How did winrates and pickrates change?
-                    More specifically, I wanted to focus on one item in particular: Rylai's Crystal Scepter.
-                    <br/> <br/>
-                    I've always loved Rylai's, but it used to be kind of a niche pick. It didn't offer all that much AP, so it was mainly picked up by tankier frontline mages,
-                    such as Rumble or Vladimir. However, the changes to itemization not only made it contain more AP, but it also gave an amazing 40% slow on basically anything any mage did,
-                    making it a <b>much</b> more attractive item for people to build.
-                    <br/> <br/>
-                    So that's the question: did people build it? How successful was it? Let's try to take a look.</p>
+                    <p>
+                        This website was made for the <a href="http://na.leagueoflegends.com/en/news/community/contests/riot-games-api-challenge-20">Riot API Challenge.</a>
+                        I collected roughly 123,000 ranked matches across both patch 5.11 and 5.14, and started analyizing them. My goal with this project was to examine the second category: How did AP itemization change up the game? How did winrates and pickrates change?
+                        More specifically, I wanted to focus on one item in particular: Rylai's Crystal Scepter.
+                        <br/> <br/>
+                        I've always loved Rylai's, but it used to be kind of a niche pick. It didn't offer all that much AP, so it was mainly picked up by tankier frontline mages,
+                        such as Rumble or Vladimir. However, the changes to itemization not only made it contain more AP, but it also gave an amazing 40% slow on basically anything any mage did,
+                        making it a <b>much</b> more attractive item for people to build.
+                        <br/> <br/>
+                        So that's the question: did people build it? How successful was it? Let's try to take a look.
+                    </p>
                 </div>
             </div>
 
@@ -78,9 +80,9 @@
                 <div class="section-content">
                     <p>
                         First, let's take at the overall winrate of all the AP champions (I'm defining an 'AP Champion' as anyone
-                        who had more than 50 games played with more than 2 AP items built over the course of the game.).
-                        Click any column to sort by it,or shift-click to have that be the second sort option.
-                        All rows are color-coded based the patch 5.14 winrate (green is great, red is bad).
+                        who had more than 50 games played with more than 2 AP items built over the course of the game.)
+                        <div class="emphasis">You can sort the tables!</div> Click any column to sort by it, or shift-click to have that be the second sort option.
+                        All rows are color-coded based the patch 5.14 winrate (green is great, red is bad) once sorted.
                     </p>
                     <div class="table-container">
                         <table id="winrate-table">
@@ -104,8 +106,9 @@
                         results are mixed: Kayle, Teemo, and Galio saw nice winrate increases, but Vladimir, Kennen, and Singed suffered a bit, and Nunu plummeted down 12%.
                         Overall, it definitely shook things up a bit, but we could use some more general data: Did pick rates change?
                     </p>
-                    <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
+
             </div>
 
             <!-- Overall Pickrates -->
@@ -118,15 +121,18 @@
 
                 <div id="playrateChartContainer" style="height: 400px; width: 100%;"></div>
 
-                <p>As you can see, Morgana and Annie dominate the chart (most likely due to their excellence in both mid and support, and occassionally top as well.)
+                <p>
+                As you can see, Morgana and Annie dominate the chart (most likely due to their excellence in both mid and support, and ocassionally top as well.)
                 However, overall, the top 15 most popular midlaners did not change at all. They might have shuffled around a bit, but this solid core is still solid, and while champions below these top 15 might have seen increases,
                 the ones at the top stayed at the top.
 
                 But none of what we've seen so far says anything about Rylai's, and that's the focus of this analysis. <b>From this point on, everything we talk about is strictly patch 5.14.</b>
-                <br/><br/>Let's go take a look at Rylais!</p>
+                <br/><br/>Let's go take a look at Rylais!
+                </p>
 
-                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
+
             </div>
 
             <!-- Rylai's Build Data (Table) -->
@@ -135,9 +141,11 @@
                     <img src="{{ url_for('static', filename='../images/rylais_build_bar.png') }}" alt="Rylai's Build Data:"/>
                 </div>
                 <div class="section-content">
-                    <p>Our goal here is to see who built Rylai's, in what order, and what the winrates are in that order. I excluded any champions who had less than
+                    <p>
+                    Our goal here is to see who built Rylai's, in what order, and what the winrates are in that order. I excluded any champions who had less than
                     100 total purchases of Rylai's (in my dataset of ~130,000 games.) In this case, all champions are color-coded based on their 'built Rylai's' winrate.
-                    We can first look at a very overwhelming table:</p>
+                    We can first look at a very overwhelming table:
+                    </p>
 
                     <div class="table-container">
                         <table id="rylais-table">
@@ -162,9 +170,12 @@
                     <p>
                         I want you to sort by the 'percent diffence' column. This will show you the change in winrate between building it and not building it.
                         Now this is just one sample of many, but it is out of 130,000 games, and I intentionally only included people who built a significant amount of Rylai's. However, there's a surprising result here:
-
-                        <br/><br/><div class="emphasis">Not a single person's winrate goes down from building a Rylai's.</div><br/><br/>
-
+                    </p>
+                        <br/><br/>
+                        <div class="emphasis">
+                            Not a single person's winrate goes down from building a Rylai's.
+                        </div><br/><br/>
+                    <p>
                         Either it has no noticeable impact, or their winrate goes up drastically (in the case of Karthus, up to 30%!).
                         if you look at the most-benefitting champions, they're all mages who provide significant sustained DPS moreso than burst: Karthus, Cassiopeia, Singed, and Fiddlesticks all benefit if you're not able to get away from them,
                         and they certainly benefitted greatly from this Rylai's change.
@@ -177,8 +188,9 @@
                         <br/><br/>
                         Now that we see winrates, let's look at the damage done and taken!
                     </p>
-                    <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
+
             </div>
 
             <!-- Rylai's Build Data (Bar Chart) -->
@@ -211,20 +223,23 @@
                           </tbody>
                         </table>
                     </div>
-                    <p>The general case seems to be again that champions who benefit from the constant slow REALLY benefit: Seeing a 30% increase in KDA on Rumble, 27% on Cassiopeia, 23% increase on Singed.
-                    And that surprising result pops up again: no one's KDA actually goes down from building Rylai's. Everyone, at least slightly, has a better KDA.</p>
-                    <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
+                    <p>
+                    The general case seems to be again that champions who benefit from the constant slow REALLY benefit: Seeing a 30% increase in KDA on Rumble, 27% on Cassiopeia, 23% increase on Singed.
+                    And that surprising result pops up again: no one's KDA actually goes down from building Rylai's. Everyone, at least slightly, has a better KDA.
+                    </p>
                 </div>
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
+
             </div>
 
             <!-- Closing Thoughts -->
             <div class="section" id="closing_section">
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/closing_thoughts_bar.jpg') }}" alt="Closing Thoughts"/>
+                    <img src="{{ url_for('static', filename='../images/closing_thoughts_bar.png') }}" alt="Closing Thoughts"/>
                 </div>
                 <div class="section-content">
                 <p>
-                This project merely scratches the tip of the iceberg as far as data and its various applications. I knew
+                <div class="emphasis">This project merely scratches the tip of the iceberg as far as data and its various applications.</div> I knew
                 Rylai's was a strong item, but I did not expect such drastic winrate increases for champions in the 30% increase range,
                 nor did I expect literally everyone to benefit from building a Rylai's. Lots of data was in line with what you would expect
                 (high DPS mages benefitting from the slow), yet there are still surprising results in every table.
@@ -232,16 +247,18 @@
                 What did you find interesting? Were you surprised by any results? Is something not adding up? <a href="mailto:matthewrmettler@gmail.com?Subject=Rylais'%20Resolve%20Feedback">Reach out to me</a> and let me know!
                 Feel free to read the info section below for more information on how I did this, or to reach out to me with questions, comments, or concerns! :)
                 </p>
-                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
+
             </div>
 
             <!-- Information About This Project -->
             <div class="section" id="info_section">
                 <div class="section-title">
-                    <img src="{{ url_for('static', filename='../images/project_information_bar.jpg') }}" alt="Project Information"/>
+                    <img src="{{ url_for('static', filename='../images/project_information_bar.png') }}" alt="Project Information"/>
                 </div>
                 <div class="section-content">
+                    <p>
                     This project was made primarily in Python and Javascript, and is split into two parts: the analysis part, and the web app part.
                     <br/><br/>
                     Both the web app and the analysis were made using the PyCharm IDE. The analysis was written in Python 2.7, utilizing sqlite and SQLAlchemy. The web app
@@ -249,6 +266,7 @@
                     Hosting for this web app is provided by <a href="http://www.heroku.com/">Heroku</a>, and all the code used to write this app can be found on its <a href="https://github.com/matthewrmettler/riot-api-challenge-2">GitHub page.</a>
                     <br/><br/>
                     Questions? Comments? Feedback? <a href="mailto:matthewrmettler@gmail.com?Subject=Rylais'%20Resolve%20Feedback">Reach out to me</a> and I'll get back to you as soon as I can. :)
+                    </p>
                 </div>
                 <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
             </div>

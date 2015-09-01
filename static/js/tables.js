@@ -1,6 +1,6 @@
 //color rows
 var colorRows = function () {
-    colorGradient = ["rgb(119, 136, 102)", "rgb(125, 115, 91)", "rgb(132, 95, 81)", "rgb(139, 74, 71)", "rgb(146, 54, 61)", "rgb(153, 34, 51)"];
+    var colorGradient = ["rgb(119, 136, 102)", "rgb(125, 115, 91)", "rgb(132, 95, 81)", "rgb(139, 74, 71)", "rgb(146, 54, 61)", "rgb(153, 34, 51)"];
     console.log("color rows");
 
     $("#winrate-table").find("tr").each(function () {
@@ -61,7 +61,7 @@ var portraits = function() {
         var championCell = $(this).find('td').eq(0);
         if (!championCell.find('img').length) {
             var championName = championCell.text();
-            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
+            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />";
             $(championCell).prepend(portrait);
         }
     });
@@ -70,7 +70,7 @@ var portraits = function() {
         var championCell = $(this).find('td').eq(0);
         if (!championCell.find('img').length)  {
             var championName = championCell.text();
-            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
+            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />";
             $(championCell).prepend(portrait);
         }
     });
@@ -79,7 +79,7 @@ var portraits = function() {
         var championCell = $(this).find('td').eq(0);
         if (!championCell.find('img').length) {
             var championName = championCell.text();
-            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />"
+            var portrait = "<img class='portrait' src='http://ddragon.leagueoflegends.com/cdn/5.14.1/img/champion/" + championName + ".png' />";
             $(championCell).prepend(portrait);
         }
     });
