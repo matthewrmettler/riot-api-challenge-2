@@ -8,7 +8,7 @@ import json
 
 from profile_builder import generate_profiles
 from api_calls import generate_champion_name_dictionary
-from helper import array_to_str, str_to_array
+from helper import array_to_str, str_to_array, str_to_array_float, win_percent
 
 average = 1097  # average number of games played
 champion_name_dict = generate_champion_name_dictionary()
@@ -85,15 +85,17 @@ class RylaisOrder(Base):
     percent_build = Column(REAL(5))
     built_winrate = Column(REAL(5))
     not_built_winrate = Column(REAL(5))
+    total_games_built = Column(Integer)
     wins = Column(String(40))
     losses = Column(String(40))
     winrates = Column(String(40))
 
-    def __init__(self, champ_id, percent_build, built_winrate, not_built_winrate, wins, losses, winrates):
+    def __init__(self, champ_id, percent_build, built_winrate, not_built_winrate, total_games_built, wins, losses, winrates):
         self.champ_id = champ_id
         self.percent_build = percent_build
         self.built_winrate = built_winrate
         self.not_built_winrate = not_built_winrate
+        self.total_games_built = total_games_built
         self.wins = wins
         self.losses = losses
         self.winrates = winrates
@@ -121,26 +123,27 @@ def populate_rylais_order_table(session):
                 if losses[i] == 0:
                     winrate.append(100.0)
                 else:
-                    winrate.append(round((float(wins[i])/(float(wins[i]) + float(losses[i])))*100.0, 2))
+                    winrate.append(win_percent(wins[i], losses[i]))
         games_with = sum(wins[1:]) + sum(losses[1:])
         games_without = wins[0] + losses[0]
         if (games_with + games_without) <= 25: # too small a sample size, continue
             continue
-        percent_build = round((float(games_with) / float(games_with + games_without))*100.0, 2)
+        percent_build = win_percent(games_with, games_without)
 
         if games_with <= 5:
             built_winrate = 0.0
         else:
-            built_winrate = round((float(sum(wins[1:])) / float(sum(wins[1:]) + sum(losses[1:])))*100.0, 2)
+            built_winrate = win_percent(sum(wins[1:]), sum(losses[1:]))
 
         if games_without <= 5:
             not_built_winrate = 0.0
         else:
-            not_built_winrate = round((float(wins[0]) / float(wins[0] + losses[0]))*100.0, 2)
-        rylai_order = RylaisOrder(champ_id, percent_build, built_winrate, not_built_winrate, array_to_str(wins), array_to_str(losses), array_to_str(winrate))
+            not_built_winrate = win_percent(wins[0], losses[0])
+        rylai_order = RylaisOrder(champ_id, percent_build, built_winrate, not_built_winrate, games_with, array_to_str(wins), array_to_str(losses), array_to_str(winrate))
         session.merge(rylai_order)
 
     session.commit()
+
 
 def populate_win_rate_table(session):
     """ This function pulls data from the Profiles table and creates the winrates table.
@@ -153,7 +156,7 @@ def populate_win_rate_table(session):
 
     keys = list(set(winrate_dict_511.keys() + winrate_dict_514.keys()))
     for champ in keys:
-        print(champ)
+        # print(champ)
         # champion ID, champion win count, champion loss count (for both patches)
         champ_id = champ
         wins_511 = winrate_dict_511[champ][0] if champ in winrate_dict_511.keys() else 0
@@ -186,7 +189,6 @@ def populate_profiles_table(session):
 
 # Helper methods
 
-
 def generate_win_rate_dictionary(session, patch_no):
     """ Generates a dictionary file from the Profiles table, in order to generate
     the winrates table.
@@ -196,14 +198,6 @@ def generate_win_rate_dictionary(session, patch_no):
     """
     winrates = {}
     for profile in session.query(dbProfile).filter_by(patch=patch_no):
-        if profile.patch == '5.11':
-            if profile.champ_id not in winrates:
-                winrates[profile.champ_id] = [0]*2
-            if profile.result:
-                winrates[profile.champ_id][0] += 1
-            else:
-                winrates[profile.champ_id][1] += 1
-        else:
             if profile.champ_id not in winrates:
                 winrates[profile.champ_id] = [0]*2
             if profile.result:
@@ -242,8 +236,8 @@ def generate_winrate_json(session, min_games=500):
     json_array = []
     with open('../static/json/winrate.json', 'wb') as f:
         for row in winrate_data:
-            winrate_511 = round((float(row.wins_511)/float(row.wins_511 + row.losses_511))*100.0, 2)
-            winrate_514 = round((float(row.wins_514)/float(row.wins_514 + row.losses_514))*100.0, 2)
+            winrate_511 = win_percent(row.wins_511, row.losses_511)
+            winrate_514 = win_percent(row.wins_514, row.losses_514)
             percent_change = round( ((winrate_514 - winrate_511) / (winrate_511))*100.0, 1)
             json_array.append({"championName": champion_name_dict[row.champ_id],
                                "wins-(5.11)": row.wins_511,
@@ -257,6 +251,53 @@ def generate_winrate_json(session, min_games=500):
         json.dump(json_array, f)
 
 
+def generate_pickrate_json(session, min_games=250):
+    pickrate_data = session.query(WinRate).filter((WinRate.wins_511 + WinRate.losses_511 + WinRate.wins_514 + WinRate.losses_514) >= min_games)
+    print(pickrate_data.count())
+    json_array = []
+    with open('../static/json/pickrate.json', 'wb') as f:
+        for row in pickrate_data:
+            pickrate_511 = row.wins_511 + row.losses_511
+            pickrate_514 = row.wins_514 + row.losses_514
+            json_array.append({"championName": champion_name_dict[row.champ_id],
+                               "gamesPlayed-(5.11)": pickrate_511,
+                               "gamesPlayed-(5.14)": pickrate_514
+                               })
+        json.dump(json_array, f)
+
+def generate_rylais_json(session, min_purchased=125):
+    rylais_data = session.query(RylaisOrder).filter(RylaisOrder.total_games_built >= min_purchased)
+    print(rylais_data.count())
+    json_array = []
+    with open('../static/json/rylais.json', 'wb') as f:
+        for row in rylais_data:
+            wins = str_to_array(row.wins)[1:]
+            winrates = str_to_array_float(row.winrates)[1:]
+
+            percent_build = row.percent_build
+            built_winrate = row.built_winrate
+            not_build_winrate = row.not_built_winrate
+            built_first_count = wins[0]
+            built_second_count = wins[1]
+            built_third_count = wins[2]
+            built_first_percent = winrates[0]
+            built_second_percent = winrates[1]
+            built_third_percent = winrates[2]
+
+            percent_change = round( ((built_winrate - not_build_winrate) / not_build_winrate)*100.0, 1)
+            json_array.append({"championName": champion_name_dict[row.champ_id],
+                               "percentBuilt": percent_build,
+                               "builtFirstWins": built_first_count,
+                               "builtSecondWins": built_second_count,
+                               "builtThirdWins": built_third_count,
+                               "builtFirstWinPercent": built_first_percent,
+                               "builtSecondWinPercent": built_second_percent,
+                               "builtThirdWinPercent": built_third_percent,
+                               "builtWinrate": built_winrate,
+                               "notBuiltWinrate": not_build_winrate,
+                               "percentDifference": percent_change
+                               })
+        json.dump(json_array, f)
 def main():
     # Set up SQLAlchemy.
     Base.metadata.create_all()
@@ -266,9 +307,10 @@ def main():
 
     # populate_profiles_table(s)
     # populate_win_rate_table(s)
-    generate_winrate_json(s)
-    #populate_rylais_order_table(s)
-
+    # generate_winrate_json(s)
+    # populate_rylais_order_table(s)
+    # generate_pickrate_json(s)
+    generate_rylais_json(s)
 
 if __name__ == "__main__":
     main()

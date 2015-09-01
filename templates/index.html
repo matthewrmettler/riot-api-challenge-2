@@ -10,9 +10,12 @@
     <meta name="author" content="Matthew Mettler">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+
     <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="{{ url_for('static', filename='../js/jquery.dynatable.js') }}"></script>
+    <script src="{{ url_for('static', filename='../js/canvasjs.min.js') }}"></script>
+
     <link rel="icon" href="../favicon.ico">
     <title>Rylai's Resolve</title>
 </head>
@@ -20,10 +23,7 @@
     <div class="container">
 
         <div class="section" id="title_section">
-            <div class="section-content">
-                <div class="title">Rylai's Resolve</div>
-                <img class="title-image" src="http://ddragon.leagueoflegends.com/cdn/5.2.1/img/item/3116.png" alt=""/>
-            </div>
+            <img class="title-image" src="{{ url_for('static', filename='../images/title.jpg') }}" alt="Rylai's Resolve"/>
         </div>
 
         <div class="content">
@@ -32,23 +32,28 @@
 
             <!-- Table of Contents -->
             <div class="section" id="toc_section">
-                <div class="section-title">Table of Contents:</div>
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/toc_bar.jpg') }}" alt="Table of Contents:"/>
+                </div>
                     <div class="section-content">
                         <ol class="toc-list">
                             <li><a href="#intro_section">Introduction</a></li>
                             <li><a href="#winrate_section">Overall Winrates</a></li>
-                            <li><a href="#pickrate_section">Overall Pickrates</a></li>
+                            <li><a href="#playrate_section">Overall Playrates</a></li>
                             <li><a href="#rylai_table_section">Rylai's Build Data (Table)</a></li>
-                            <li><a href="#rylai_barchart_section">Rylai's Build Data (Bar Chart)</a></li>
+                            <li><a href="#rylai_damage_section">Rylai's Damage Data</a></li>
                             <li><a href="#closing_section">Closing Thoughts</a></li>
-                            <li><a href="#info_section">Information About This Project</a></li>
+                            <li><a href="#info_section">Project Information</a></li>
                         </ol>
                     </div>
             </div>
 
             <!-- Introduction -->
             <div class="section" id="intro_section">
-                <div class="section-title">Introduction</div>
+                <!-- <div class="section-title">Introduction</div> -->
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/intro_bar.jpg') }}" alt="Introduction"/>
+                </div>
                 <div class="section-content">
                     <p>Hey there! Welcome to Rylai's Resolve!</p>
 
@@ -66,14 +71,16 @@
 
             <!-- Overall Winrates -->
             <div class="section" id="winrate_section">
-                <div class="section-title">Overall Winrates</div>
-                <div class="toc-list"><a href="#toc_section">Back to Top</a></div>
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/winrates_bar.jpg') }}" alt="Overall Winrates:"/>
+                </div>
+
                 <div class="section-content">
                     <p>
                         First, let's take at the overall winrate of all the AP champions (I'm defining an 'AP Champion' as anyone
                         who had more than 50 games played with more than 2 AP items built over the course of the game.).
                         Click any column to sort by it,or shift-click to have that be the second sort option.
-                        All rows are color-coded by the patch 5.14 winrate.
+                        All rows are color-coded based the patch 5.14 winrate (green is great, red is bad).
                     </p>
                     <div class="table-container">
                         <table id="winrate-table">
@@ -91,46 +98,100 @@
                           </tbody>
                         </table>
                     </div>
+                    <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
 
             <!-- Overall Pickrates -->
-            <div class="section" id="pickrate_section">
-                <div class="section-title">Overall Pickrates</div>
+            <div class="section" id="playrate_section">
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/playrates_bar.jpg') }}" alt="Overall Playrates:"/>
+                </div>
                 <div class="section-content">
-                    <p>Next, we can simply see who the most popular midlaners were by pickrate. Let's look at a pie chart.</p>
+                    <p>Next, we can simply see who the most popular midlaners were by playrate. Let's look at a bar graph.</p>
+
+                <div id="playrateChartContainer" style="height: 400px; width: 100%;"></div>
+
+                <p>As you can see, Morgana and Annie dominate the chart (most likely due to their excellence in both mid and support, and occassionally top as well.)
+                But none of what we've seen so far says anything about Rylai's, so let's go take a look at that!</p>
+
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
 
             <!-- Rylai's Build Data (Table) -->
             <div class="section" id="rylai_table_section">
-                <div class="section-title">Rylai's Build Data (Table)</div>
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/rylais_build_bar.jpg') }}" alt="Rylai's Build Data:"/>
+                </div>
                 <div class="section-content">
-                    <p>Now, let's look to see who built Rylai's, in what order, and what the winrates are in that order.
+                    <p>Now, let's look to see who built Rylai's, in what order, and what the winrates are in that order. I excluded any champions who had less than
+                    100 total purchases of Rylai's (in my dataset of ~130,000 games.) In this case, all champions are color-coded based on their 'built Rylai's' winrate.
                     We can first look at a very overwhelming table:</p>
+
+                    <div class="table-container">
+                        <table id="rylais-table">
+                          <thead>
+                            <th>Champion Name</th>
+                            <th>Percent Built</th>
+                            <th>Built First Wins</th>
+                            <th>Built Second Wins</th>
+                            <th>Built Third Wins</th>
+                            <th>Built First Win Percent</th>
+                            <th>Built Second Win Percent</th>
+                            <th>Built Third Win Percent</th>
+                            <th>Built Winrate</th>
+                            <th>Not Built Winrate</th>
+                            <th>Percent Difference</th>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                        </table>
+                    </div>
+
+                    <p>I want you to sort by the 'percent diffence' column. This will show you the change in winrate between building it and not building it.
+                    Now this is just one sample of many, but it is out of 130,000 games, and I intentionally only included people who built a significant amount of Rylai's, and there's a surprising result here:
+                    <b>not a single person's winrate goes down from building a Rylai's</b>. Either it has no noticeable impact, or their winrate goes up drastically (in the case of Karthus, up to 30!).</p>
+
+                    <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
 
             <!-- Rylai's Build Data (Bar Chart) -->
-            <div class="section" id="rylai_barchart_section">
-                <div class="section-title">Rylai's Build Data Bar Chart</div>
+            <div class="section" id="rylai_damage_section">
+                <div class="section-title">Rylai's Damage Data</div>
                 <div class="section-content">
-                    <p>Now we can look at it in a more manageable bar graph. Each section is for one champion, and each sub-bar
-                    is for what build order that Rylai's was built in.</p>
+                    <p>
+                    Now, let's take a look at how building Rylai's affects KDA, damage dealt, and damage taken.
+
+                    (This section omitted due to insufficient time.)
+                    </p>
+                    <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
 
             <!-- Closing Thoughts -->
             <div class="section" id="closing_section">
-                <div class="section-title">Closing Thoughts</div>
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/closing_thoughts_bar.jpg') }}" alt="Closing Thoughts"/>
+                </div>
                 <div class="section-content">
+                <p>
+                I did not get to cover as much as I would like, due to time constraints, but I found this progress incredibly interesting. I knew
+                Rylai's was a strong item, but I did not expect such drastic winrate increases for champions such as Karthus (who already had a slow),
+                nor did I expect literally everyone to benefit from building a Rylai's.
 
+                Feel free to read the info section below for more information on how I did this, or to reach out to me with questions, comments, or concerns! :)
+                </p>
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
 
             <!-- Information About This Project -->
             <div class="section" id="info_section">
-                <div class="section-title">Information About This Project</div>
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/project_information_bar.jpg') }}" alt="Project Information"/>
+                </div>
                 <div class="section-content">
                     This project was made primarily in Python and Javascript, and is split into two parts: the analysis part, and the web app part.
                     <br/><br/>
@@ -153,5 +214,6 @@
 
     <script src="{{ url_for('static', filename='../js/tables.js') }}"></script>
     <script src="{{ url_for('static', filename='../js/jquery_helper.js') }}"></script>
+    <script src="{{ url_for('static', filename='../js/chart_render.js') }}"></script>
 </body>
 </html>

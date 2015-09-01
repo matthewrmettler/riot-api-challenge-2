@@ -5,7 +5,7 @@
  */
 
 .full {
-    background: url('http://ddragon.leagueoflegends.com/cdn/img/champion/splash/Orianna_5.jpg') no-repeat center center fixed;
+    background: url('../images/orianna_bg.jpg') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
@@ -41,8 +41,6 @@ table a:active {
     font-weight: bold;
 }
 .title-image {
-    width: 300px;
-    height: 300px;
     display: block;
     margin: auto;
     padding: 15px 15px;
@@ -58,6 +56,7 @@ table a:active {
     font-size: 48px;
     text-align: left;
     font-weight: bold;
+    margin-right: auto;
 }
 
 .section-content {
@@ -66,7 +65,16 @@ table a:active {
     text-align: left;
     font-size: 16px;
 }
-
+.back-to-top-bar {
+    margin-left: auto;
+    margin-top: 10px;
+    display: block;
+    border: 0;
+}
+.playrateChartContainer {
+    padding: 25px 25px;
+    margin: 10px 10px;
+}
 .toc-list {
     color: #003654;
     text-align: left;
@@ -96,7 +104,7 @@ table a:active {
 }
 table {
     table-layout: fixed;
-    width:80%;
+    width:95%;
     margin: auto auto;
     border-spacing: 0px;
 }
@@ -126,7 +134,7 @@ input {
 }
 
 td {
-    width:10%;
+    width:20%;
     padding: 3px 3px;
     position:relative;
     background-color: rgba(0, 88, 136, 0.35);
