@@ -15,6 +15,9 @@
     color: #80acc4;
 }
 
+p {
+    line-height: 150%;
+}
 table a {
     color: #0a4263;
 }
@@ -100,6 +103,7 @@ table a:active {
 }
 
 .toc-list {
+    color: #fff;
     font-size: 18px;
 }
 

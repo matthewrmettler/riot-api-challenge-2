@@ -98,6 +98,12 @@
                           </tbody>
                         </table>
                     </div>
+                    <p>
+                        Patch 5.14 was most kind to Janna: The cheaper AP itemization meant that support Jannas that were doing well could do even more well,
+                        with cheaper sources of Ability Power, and access to the new, incredibly strong Zeke's Harbinger. Despite goals of bringing more non-traditional AP characters into the fold,
+                        results are mixed: Kayle, Teemo, and Galio saw nice winrate increases, but Vladimir, Kennen, and Singed suffered a bit, and Nunu plummeted down 12%.
+                        Overall, it definitely shook things up a bit, but we could use some more general data: Did pick rates change?
+                    </p>
                     <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
@@ -108,12 +114,15 @@
                     <img src="{{ url_for('static', filename='../images/playrates_bar.jpg') }}" alt="Overall Playrates:"/>
                 </div>
                 <div class="section-content">
-                    <p>Next, we can simply see who the most popular midlaners were by playrate. Let's look at a bar graph.</p>
+                    <p>Due to poor planning on my part, I did not get ban rates. Sorry! However, we do have overall pick rates, and we can see them in the bar graph below:</p>
 
                 <div id="playrateChartContainer" style="height: 400px; width: 100%;"></div>
 
                 <p>As you can see, Morgana and Annie dominate the chart (most likely due to their excellence in both mid and support, and occassionally top as well.)
-                But none of what we've seen so far says anything about Rylai's, so let's go take a look at that!</p>
+                However, overall, the top 15 most popular midlaners did not change at all. They might have shuffled around a bit, but this solid core is still solid, and while champions below these top 15 might have seen increases,
+                the ones at the top stayed at the top.
+
+                But none of what we've seen so far says anything about Rylai's, and that's the focus of this analysis. Let's go take a look at that!</p>
 
                 <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
@@ -125,7 +134,7 @@
                     <img src="{{ url_for('static', filename='../images/rylais_build_bar.jpg') }}" alt="Rylai's Build Data:"/>
                 </div>
                 <div class="section-content">
-                    <p>Now, let's look to see who built Rylai's, in what order, and what the winrates are in that order. I excluded any champions who had less than
+                    <p>Our goal here is to see who built Rylai's, in what order, and what the winrates are in that order. I excluded any champions who had less than
                     100 total purchases of Rylai's (in my dataset of ~130,000 games.) In this case, all champions are color-coded based on their 'built Rylai's' winrate.
                     We can first look at a very overwhelming table:</p>
 
@@ -149,21 +158,38 @@
                         </table>
                     </div>
 
-                    <p>I want you to sort by the 'percent diffence' column. This will show you the change in winrate between building it and not building it.
-                    Now this is just one sample of many, but it is out of 130,000 games, and I intentionally only included people who built a significant amount of Rylai's, and there's a surprising result here:
-                    <b>not a single person's winrate goes down from building a Rylai's</b>. Either it has no noticeable impact, or their winrate goes up drastically (in the case of Karthus, up to 30!).</p>
+                    <p>
+                        I want you to sort by the 'percent diffence' column. This will show you the change in winrate between building it and not building it.
+                        Now this is just one sample of many, but it is out of 130,000 games, and I intentionally only included people who built a significant amount of Rylai's. However, there's a surprising result here:
 
+                        <br/><br/><b>Not a single person's winrate goes down from building a Rylai's.</b><br/><br/>
+
+                        Either it has no noticeable impact, or their winrate goes up drastically (in the case of Karthus, up to 30%!).
+                        if you look at the most-benefitting champions, they're all mages who provide significant sustained DPS moreso than burst: Karthus, Cassiopeia, Singed, and Fiddlesticks all benefit if you're not able to get away from them,
+                        and they certainly benefitted greatly from this Rylai's change.
+                        <br/><br/>
+                        Who benefitted the least? it looks like it's mostly champions that benefit from being in range of you, but once they're in range and their signature ability lands, their job is done: Malphite ults (and has a slow on his q); Ori's ball, if it's in range, can simply ult and doesn't benefit from a slow.
+                        Malzahar will just flash ult you, and if you don't die in that, a couple seconds where you're slowed afterwards won't necessarily make or break him. If Cho'gath lands the rupture, it's basically over anyways. Even so, even in these cases where the champsions don't benefit <b>much</b>, they <i>still</i> benefit -- enough where it's worth building that Rylai's.
+                        <br/><br/>
+                        What about build order? There's a lot of info to process here, and in some cases it's incredibly small sample sizes, but one data point stands out at me.
+                        Those 13 fiddles who built it first snowballed incredibly well and got an astounding 91% winrate; those who got it second were not so fortunate, but those who built it third brought it back to a 70% winrate. This kind of makes sense to me, as Runeglaive is not so great on Fiddle, and people stuck in your Crowstorm due to the slow would get a few extra ticks of that damage.
+                        <br/><br/>
+                        Now that we see winrates, let's look at the damage done and taken!
+                    </p>
                     <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
 
             <!-- Rylai's Build Data (Bar Chart) -->
             <div class="section" id="rylai_damage_section">
-                <div class="section-title">Rylai's Damage Data</div>
+                <div class="section-title">
+                    <img src="{{ url_for('static', filename='../images/rylai_damage_bar.jpg') }}" alt="Rylai's Damage Table"/>
+                </div>
                 <div class="section-content">
                     <p>
-                    Now, let's take a look at how building Rylai's affects KDA, damage dealt, and damage taken.
-
+                        We can now take a look at a table that shows how building Rylai's affects KDA, and a 'damage ratio'; that is, for every 1 point of damage taken, how much damage are we dealing back?
+                        The color scheme for this table is based off of the KDA percent change (the last column).
+                    </p>
                     <div class="table-container">
                         <table id="damage-table">
                           <thead>
@@ -184,7 +210,8 @@
                           </tbody>
                         </table>
                     </div>
-                    </p>
+                    <p>The general case seems to be again that champions who benefit from the constant slow REALLY benefit: Seeing a 30% increase in KDA on Rumble, 27% on Cassiopeia, 23% increase on Singed.
+                    And that surprising result pops up again: no one's KDA actually goes down from building Rylai's. Everyone, at least slightly, has a better KDA.</p>
                     <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
                 </div>
             </div>
@@ -196,10 +223,11 @@
                 </div>
                 <div class="section-content">
                 <p>
-                I did not get to cover as much as I would like, due to time constraints, but I found this progress incredibly interesting. I knew
-                Rylai's was a strong item, but I did not expect such drastic winrate increases for champions such as Karthus (who already had a slow),
+                I did not get to cover as much as I would like, due to time constraints, but I found this project incredibly interesting. I knew
+                Rylai's was a strong item, but I did not expect such drastic winrate increases for champions in the 30% increase range,
                 nor did I expect literally everyone to benefit from building a Rylai's.
-
+                <br/><br/>
+                What did you find interesting? Were you surprised by any results? Is something not adding up? <a href="mailto:matthewrmettler@gmail.com?Subject=Rylais'%20Resolve%20Feedback">Reach out to me</a> and let me know!
                 Feel free to read the info section below for more information on how I did this, or to reach out to me with questions, comments, or concerns! :)
                 </p>
                 <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
@@ -220,6 +248,7 @@
                     <br/><br/>
                     Questions? Comments? Feedback? <a href="mailto:matthewrmettler@gmail.com?Subject=Rylais'%20Resolve%20Feedback">Reach out to me</a> and I'll get back to you as soon as I can. :)
                 </div>
+                <a href="#toc_section"><img class="back-to-top-bar" src="{{ url_for('static', filename='../images/back_to_top.jpg') }}" alt="Back To Top"/></a>
             </div>
         </div>
 
