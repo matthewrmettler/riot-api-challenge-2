@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="SQLite -" uuid="f9302b39-82f1-4e1c-9ed9-561b626adf8c">
+    <database-info product="SQLite" version="3.8.9" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native"/>
+    <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed"/>
+    <schema name="" catalog=""/>
+    <table name="Profiles" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="champ_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="match_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="patch" sqlType="VARCHAR(6)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="region" sqlType="VARCHAR(2)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="queue" sqlType="VARCHAR(15)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="result" sqlType="BOOLEAN" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="kills" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="deaths" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="assists" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="final_build" sqlType="VARCHAR(40)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="build_order" sqlType="VARCHAR(40)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="damage_done" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="damage_taken" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="has_rylais" sqlType="BOOLEAN" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="rylais_order" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <primary-key columns="id),check (result in (0,1"/>
+    </table>
+    <table name="rylais_order" schema="" catalog="" type="TABLE">
+      <column name="champ_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="percent_build" sqlType="REAL" precision="2000000000" scale="10" nullable="true" jdbcType="6"/>
+      <column name="built_winrate" sqlType="REAL" precision="2000000000" scale="10" nullable="true" jdbcType="6"/>
+      <column name="not_built_winrate" sqlType="REAL" precision="2000000000" scale="10" nullable="true" jdbcType="6"/>
+      <column name="total_games_built" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="wins" sqlType="VARCHAR(40)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="losses" sqlType="VARCHAR(40)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="winrates" sqlType="VARCHAR(40)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <primary-key columns="champ_id"/>
+    </table>
+    <table name="winrates" schema="" catalog="" type="TABLE">
+      <column name="champ_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="wins_511" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="losses_511" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="wins_514" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="losses_514" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <primary-key columns="champ_id"/>
+    </table>
+  </data-source>
+</component>
